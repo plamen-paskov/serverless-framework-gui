@@ -1,0 +1,15 @@
+<idea-plugin>
+    <id>io.solidloop.jetbrains.ide.serverlessframeworkgui</id>
+    <name>Serverless Framework GUI</name>
+    <vendor email="paskov@gmail.com">Plamen Paskov</vendor>
+
+    <description><![CDATA[
+    Integration of <a href="https://serverless.com/">Serverless Framework</a> for all JetBrains IDEs
+    ]]></description>
+
+    <depends>com.intellij.modules.lang</depends>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow id="Serverless Framework GUI" anchor="right" factoryClass="io.solidloop.jetbrains.ide.serverlessframeworkgui.ServicesToolWindowFactory"/>
+    </extensions>
+</idea-plugin>
