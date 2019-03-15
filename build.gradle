@@ -25,14 +25,11 @@ intellij {
     version '2018.3.4'
 }
 patchPluginXml {
-    changeNotes """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+    changeNotes """Initial release"""
 }
 
 runIde { jbreVersion 'jbrex8u202b1483.4' }
 
 publishPlugin {
-    username intellijPublishUsername
-    password intellijPublishPassword
+    token intellijPublishToken
 }
