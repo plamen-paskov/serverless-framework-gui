@@ -17,6 +17,6 @@ public class ExecScriptCommandLineFactory implements CommandLineFactory {
                 .withCharset(Charset.forName("UTF-8"))
                 .withWorkDirectory(directory)
                 .withExePath(execScriptPath)
-                .withParameters(command);
+                .withParameters(new GeneralCommandLine(command).getCommandLineString());
     }
 }

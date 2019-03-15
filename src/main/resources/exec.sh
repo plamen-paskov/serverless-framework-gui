@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-$@ | sed 's/$/\r/'
+eval "$1" | sed 's/$/\r/'

@@ -12,8 +12,8 @@ import java.util.Set;
 public class Service implements Comparable<Service> {
     private VirtualFile file;
     private String name;
-    private String stage = "dev";
-    private String region = "eu-east-1";
+    private String stage;
+    private String region;
     private Set<String> functions;
 
     @Override

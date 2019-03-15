@@ -158,6 +158,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
             }
 
             FileUtils.copyURLToFile(execScript, file);
+            file.setExecutable(true);
         }
     }
 

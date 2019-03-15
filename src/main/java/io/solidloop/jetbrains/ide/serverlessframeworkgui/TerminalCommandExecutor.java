@@ -21,7 +21,7 @@ public class TerminalCommandExecutor implements CommandExecutor {
     private Project project;
 
     @Override
-    public void execute(Function function, GeneralCommandLine commandLine) throws ExecutionException {
+    public void execute(String terminalTitle, GeneralCommandLine commandLine) throws ExecutionException {
         ProcessHandler processHandler = new OSProcessHandler(commandLine);
         TerminalExecutionConsole consoleView = new TerminalExecutionConsole(project, processHandler);
 
@@ -30,11 +30,7 @@ public class TerminalCommandExecutor implements CommandExecutor {
 
         processHandler.startNotify();
 
-        RunContentDescriptor contentDescriptor = new RunContentDescriptor(consoleView, processHandler, panel, getTerminalTitle(function));
+        RunContentDescriptor contentDescriptor = new RunContentDescriptor(consoleView, processHandler, panel, terminalTitle);
         ExecutionManager.getInstance(project).getContentManager().showRunContent(DefaultRunExecutor.getRunExecutorInstance(), contentDescriptor);
-    }
-
-    private String getTerminalTitle(Function function) {
-        return function.getService().getName() + "::" + function.getName();
     }
 }

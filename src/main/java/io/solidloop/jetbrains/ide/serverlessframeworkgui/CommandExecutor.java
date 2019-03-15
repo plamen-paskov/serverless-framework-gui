@@ -4,5 +4,5 @@ import com.intellij.execution.ExecutionException;
 import com.intellij.execution.configurations.GeneralCommandLine;
 
 public interface CommandExecutor {
-    void execute(Function function, GeneralCommandLine commandLine) throws ExecutionException;
+    void execute(String terminalTitle, GeneralCommandLine commandLine) throws ExecutionException;
 }
