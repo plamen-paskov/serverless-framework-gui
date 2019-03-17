@@ -1,25 +1,21 @@
 package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
 import com.intellij.execution.ExecutionException;
-import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.openapi.ui.MessageType;
-import com.intellij.openapi.ui.popup.JBPopup;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
-import lombok.AllArgsConstructor;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -114,6 +110,10 @@ public class ServicesTreeFactory {
         return command;
     }
 
+    private String getDataFile(Function function) {
+        return function.getService().getFile().getParent().getCanonicalPath() + "/serverless-framework-gui/" + function.getService().getName() + "/" + function.getName() + ".json";
+    }
+
     private List<String> createInvokeFunctionCommand(Function function) {
         List<String> command = new ArrayList<>();
         command.add(SERVERLESS_EXECUTABLE);
@@ -122,8 +122,16 @@ public class ServicesTreeFactory {
         command.add(function.getName());
         command.add("-r");
         command.add(function.getService().getRegion());
-        command.add("-d");
-        command.add("{}");
+
+        String dataFile = getDataFile(function);
+        File file = new File(dataFile);
+        if (!file.exists()) {
+            command.add("-d");
+            command.add("{}");
+        } else {
+            command.add("-p");
+            command.add(dataFile);
+        }
 
         return command;
     }
