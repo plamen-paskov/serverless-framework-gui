@@ -11,3 +11,5 @@ To use this plugin you must have bash shell and <a href="https://serverless.com/
 
 ###### Notes
 <b>serverless</b> executable must be in your search path
+
+<img src="https://s2.gifyu.com/images/serverless-framework-gui-overview.gif" border="0" />
