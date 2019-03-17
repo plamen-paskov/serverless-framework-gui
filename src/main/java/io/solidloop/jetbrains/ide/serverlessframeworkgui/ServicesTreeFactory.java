@@ -10,18 +10,26 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
 import lombok.AllArgsConstructor;
+import lombok.NonNull;
+import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.TreePath;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.ArrayList;
 import java.util.List;
 
-@AllArgsConstructor
+@RequiredArgsConstructor
 public class ServicesTreeFactory {
+    private static final String SERVERLESS_EXECUTABLE = "serverless";
+
+    @NonNull
     private CommandExecutor commandExecutor;
+    @NonNull
     private CommandLineFactory commandLineFactory;
 
     public Tree create(DefaultMutableTreeNode rootNode) {
@@ -39,16 +47,7 @@ public class ServicesTreeFactory {
                 if (mouseEvent.getClickCount() == 2 && userObject instanceof Function) {
                     Function function = (Function) userObject;
 
-                    try {
-                        GeneralCommandLine deployAndInvokeCommandLine = commandLineFactory.create(function.getService().getFile().getParent().getCanonicalPath(), createDeployAndInvokeFunctionCommand(function));
-                        commandExecutor.execute("Invoke " + function.getName(), deployAndInvokeCommandLine);
-                    } catch (ExecutionException e) {
-                        JBPopupFactory.getInstance()
-                                .createHtmlTextBalloonBuilder(e.getMessage(), MessageType.ERROR, null)
-                                .setFadeoutTime(10000)
-                                .createBalloon()
-                                .showInCenterOf(tree);
-                    }
+                    execute("Invoke " + function.getName(), function.getService().getFile().getParent().getCanonicalPath(), createInvokeFunctionCommand(function), tree);
                 } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
                     createPopupMenu((DefaultMutableTreeNode) anchorSelectionPath.getLastPathComponent(), tree).show(tree, mouseEvent.getX(), mouseEvent.getY());
                 }
@@ -68,18 +67,18 @@ public class ServicesTreeFactory {
             String directory = service.getFile().getParent().getCanonicalPath();
 
             JBMenuItem deployMenuItem = new JBMenuItem("Deploy");
-            deployMenuItem.addActionListener(new MenuItemListener(directory, createDeployServiceCommand(), "Deploy " + service.getName(), commandExecutor, commandLineFactory, tree));
+            deployMenuItem.addActionListener(actionEvent -> execute("Deploy " + service.getName(), directory, createDeployServiceCommand(), tree));
             popup.add(deployMenuItem);
 
             JBMenuItem removeMenuItem = new JBMenuItem("Remove");
-            removeMenuItem.addActionListener(new MenuItemListener(directory, createRemoveServiceCommand(), "Remove " + service.getName(), commandExecutor, commandLineFactory, tree));
+            removeMenuItem.addActionListener(actionEvent -> execute("Remove " + service.getName(), directory, createRemoveServiceCommand(), tree));
             popup.add(removeMenuItem);
         } else if (userObject instanceof Function) {
             Function function = (Function) userObject;
             String directory = function.getService().getFile().getParent().getCanonicalPath();
 
             JBMenuItem deployAndInvokeMenuItem = new JBMenuItem("Deploy and Invoke");
-            deployAndInvokeMenuItem.addActionListener(new MenuItemListener(directory, createDeployAndInvokeFunctionCommand(function), "Deploy and Invoke " + function.getName(), commandExecutor, commandLineFactory, tree));
+            deployAndInvokeMenuItem.addActionListener(actionEvent -> execute("Deploy and Invoke " + function.getName(), directory, createDeployAndInvokeFunctionCommand(function), tree));
             popup.add(deployAndInvokeMenuItem);
         }
 
@@ -88,7 +87,7 @@ public class ServicesTreeFactory {
 
     private List<String> createDeployServiceCommand() {
         List<String> command = new ArrayList<>();
-        command.add("serverless");
+        command.add(SERVERLESS_EXECUTABLE);
         command.add("deploy");
 
         return command;
@@ -96,7 +95,7 @@ public class ServicesTreeFactory {
 
     private List<String> createRemoveServiceCommand() {
         List<String> command = new ArrayList<>();
-        command.add("serverless");
+        command.add(SERVERLESS_EXECUTABLE);
         command.add("remove");
 
         return command;
@@ -104,13 +103,20 @@ public class ServicesTreeFactory {
 
     private List<String> createDeployAndInvokeFunctionCommand(Function function) {
         List<String> command = new ArrayList<>();
-        command.add("serverless");
+        command.add(SERVERLESS_EXECUTABLE);
         command.add("deploy");
         command.add("function");
         command.add("-f");
         command.add(function.getName());
         command.add("&&");
-        command.add("serverless");
+        command.addAll(createInvokeFunctionCommand(function));
+
+        return command;
+    }
+
+    private List<String> createInvokeFunctionCommand(Function function) {
+        List<String> command = new ArrayList<>();
+        command.add(SERVERLESS_EXECUTABLE);
         command.add("invoke");
         command.add("-f");
         command.add(function.getName());
@@ -120,5 +126,17 @@ public class ServicesTreeFactory {
         command.add("{}");
 
         return command;
+    }
+
+    private void execute(String terminalTitle, String directory, List<String> command, Tree tree) {
+        try {
+            commandExecutor.execute(terminalTitle, commandLineFactory.create(directory, command));
+        } catch (ExecutionException e) {
+            JBPopupFactory.getInstance()
+                    .createHtmlTextBalloonBuilder(e.getMessage(), MessageType.ERROR, null)
+                    .setFadeoutTime(10000)
+                    .createBalloon()
+                    .showInCenterOf(tree);
+        }
     }
 }
