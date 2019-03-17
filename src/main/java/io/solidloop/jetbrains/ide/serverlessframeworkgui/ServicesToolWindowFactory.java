@@ -9,7 +9,6 @@ import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.components.JBScrollPane;
-import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.Tree;
@@ -29,21 +28,17 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
-        Content content = contentFactory.createContent(createWindowContent(project), null, false);
-        toolWindow.getContentManager().addContent(content);
-    }
-
-    private JBTabbedPane createWindowContent(Project project) {
-        JBTabbedPane panel = new JBTabbedPane();
-        Config config;
-
         try {
-            config = getConfig();
-            copyExecScriptToTmpIfNeeded(config);
+            Content content = contentFactory.createContent(createWindowContent(project), null, false);
+            toolWindow.getContentManager().addContent(content);
         } catch (IOException e) {
             reportException(e);
-            return panel;
         }
+    }
+
+    private JBScrollPane createWindowContent(Project project) throws IOException {
+        Config config = getConfig();
+        copyExecScriptToTmpIfNeeded(config);
 
         ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()));
         ServiceRepository serviceRepository = new ServiceRepository(project, serviceFactory);
@@ -144,9 +139,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
             }
         });
 
-        panel.insertTab(Labels.SERVICES_TAB_NAME, null, new JBScrollPane(servicesTree), Labels.SERVICES_TAB_TIP, 0);
-
-        return panel;
+        return new JBScrollPane(servicesTree);
     }
 
     private void copyExecScriptToTmpIfNeeded(Config config) throws IOException {
