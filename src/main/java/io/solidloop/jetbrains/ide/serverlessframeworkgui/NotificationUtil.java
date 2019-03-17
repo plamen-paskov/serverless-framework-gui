@@ -6,6 +6,6 @@ import com.intellij.notification.Notifications;
 
 public class NotificationUtil {
     public static void displayError(String title, String content) {
-        Notifications.Bus.notify(new Notification(Labels.NOTIFICATION_DISPLAY_GROUP_ID, title, content, NotificationType.ERROR));
+        Notifications.Bus.notify(new Notification("Serverless Framework GUI", title, content, NotificationType.ERROR));
     }
 }
