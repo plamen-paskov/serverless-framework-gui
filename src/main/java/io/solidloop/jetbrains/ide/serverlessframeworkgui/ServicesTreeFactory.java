@@ -1,6 +1,7 @@
 package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
 import com.intellij.execution.ExecutionException;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.openapi.ui.MessageType;
@@ -12,6 +13,8 @@ import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
+import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
@@ -49,6 +52,12 @@ public class ServicesTreeFactory {
                 }
             }
         });
+
+        DefaultTreeCellRenderer defaultTreeCellRenderer = new DefaultTreeCellRenderer();
+        defaultTreeCellRenderer.setOpenIcon(AllIcons.FileTypes.Diagram);
+        defaultTreeCellRenderer.setClosedIcon(AllIcons.FileTypes.Diagram);
+        defaultTreeCellRenderer.setLeafIcon(AllIcons.Gutter.ImplementingFunctionalInterface);
+        tree.setCellRenderer(defaultTreeCellRenderer);
 
         return tree;
     }
