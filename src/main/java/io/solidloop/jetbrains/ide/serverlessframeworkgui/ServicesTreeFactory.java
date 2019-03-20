@@ -1,7 +1,5 @@
 package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.execution.ExecutionException;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.structureView.StructureView;
@@ -28,7 +26,6 @@ import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +52,7 @@ public class ServicesTreeFactory {
             public void mouseClicked(final MouseEvent mouseEvent) {
                 Tree tree = (Tree) mouseEvent.getSource();
                 TreePath anchorSelectionPath = tree.getAnchorSelectionPath();
-                Object userObject = ((DefaultMutableTreeNode) anchorSelectionPath.getLastPathComponent()).getUserObject();
+                Object userObject = anchorSelectionPath != null ? ((DefaultMutableTreeNode) anchorSelectionPath.getLastPathComponent()).getUserObject() : null;
 
                 if (mouseEvent.getClickCount() == 2 && userObject instanceof Function) {
                     Function function = (Function) userObject;
