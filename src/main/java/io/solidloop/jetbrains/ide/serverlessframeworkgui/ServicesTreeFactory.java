@@ -112,7 +112,7 @@ public class ServicesTreeFactory {
                         .setResizable(true)
                         .setTitle(function.getName());
 
-                        if (closeFile) {
+                        if (openFile && closeFile) {
                             componentPopupBuilder.setCancelCallback(() -> {
                                 FileEditorManager.getInstance(project).closeFile(file);
                                 return true;
