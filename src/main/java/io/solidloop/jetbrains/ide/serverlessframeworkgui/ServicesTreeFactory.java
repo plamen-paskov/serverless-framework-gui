@@ -1,11 +1,21 @@
 package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.execution.ExecutionException;
 import com.intellij.icons.AllIcons;
+import com.intellij.ide.structureView.StructureView;
+import com.intellij.json.structureView.JsonStructureViewBuilderFactory;
+import com.intellij.openapi.fileEditor.FileEditor;
+import com.intellij.openapi.fileEditor.FileEditorManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.PsiManager;
+import com.intellij.testFramework.LightVirtualFile;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
 import lombok.NonNull;
@@ -14,11 +24,11 @@ import lombok.RequiredArgsConstructor;
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
-import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,6 +40,10 @@ public class ServicesTreeFactory {
     private CommandExecutor commandExecutor;
     @NonNull
     private CommandLineFactory commandLineFactory;
+    @NonNull
+    private Project project;
+    @NonNull
+    private JTabbedPane component;
 
     public Tree create(DefaultMutableTreeNode rootNode) {
         Tree tree = new Tree(rootNode);
@@ -46,7 +60,18 @@ public class ServicesTreeFactory {
                 if (mouseEvent.getClickCount() == 2 && userObject instanceof Function) {
                     Function function = (Function) userObject;
 
-                    execute("Invoke " + function.getName(), function.getService().getFile().getParent().getCanonicalPath(), createInvokeFunctionCommand(function), tree);
+                    String data = execute("Invoke " + function.getName(), function.getService().getFile().getParent().getCanonicalPath(), createInvokeFunctionCommand(function), tree);
+                    if (data.startsWith("{")) {
+                        LightVirtualFile file = new LightVirtualFile(function.getName() + ".json", data);
+                        FileEditor[] fileEditors = FileEditorManager.getInstance(project).openFile(file, true);
+
+                        PsiFile jsonPsiFile = PsiManager.getInstance(project).findFile(file);
+
+                        StructureView structureView = new JsonStructureViewBuilderFactory()
+                                .getStructureViewBuilder(jsonPsiFile)
+                                .createStructureView(fileEditors[0], project);
+                        component.insertTab("aaaa", null, structureView.getComponent(), null, 1);
+                    }
                 } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
                     createPopupMenu((DefaultMutableTreeNode) anchorSelectionPath.getLastPathComponent(), tree).show(tree, mouseEvent.getX(), mouseEvent.getY());
                 }
@@ -145,9 +170,9 @@ public class ServicesTreeFactory {
         return command;
     }
 
-    private void execute(String terminalTitle, String directory, List<String> command, Tree tree) {
+    private String execute(String terminalTitle, String directory, List<String> command, Tree tree) {
         try {
-            commandExecutor.execute(terminalTitle, commandLineFactory.create(directory, command));
+            return commandExecutor.execute(terminalTitle, commandLineFactory.create(directory, command));
         } catch (ExecutionException e) {
             JBPopupFactory.getInstance()
                     .createHtmlTextBalloonBuilder(e.getMessage(), MessageType.ERROR, null)
@@ -155,5 +180,6 @@ public class ServicesTreeFactory {
                     .createBalloon()
                     .showInCenterOf(tree);
         }
+        return terminalTitle;
     }
 }

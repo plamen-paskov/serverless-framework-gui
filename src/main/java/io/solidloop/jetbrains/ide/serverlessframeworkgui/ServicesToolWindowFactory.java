@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.*;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
 import com.intellij.ui.components.JBScrollPane;
+import com.intellij.ui.components.JBTabbedPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.Tree;
@@ -36,7 +37,9 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         }
     }
 
-    private JBScrollPane createWindowContent(Project project) throws IOException {
+    private JBTabbedPane createWindowContent(Project project) throws IOException {
+        JBTabbedPane jbTabbedPane = new JBTabbedPane();
+
         Config config = getConfig();
         copyExecScriptToTmpIfNeeded(config);
 
@@ -46,7 +49,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         ServicesTreeComparator servicesTreeComparator = new ServicesTreeComparator();
         ServicesTreeRootNodeFactory servicesTreeRootNodeFactory = new ServicesTreeRootNodeFactory(serviceNodeFactory, servicesTreeComparator);
         DefaultMutableTreeNode rootNode = servicesTreeRootNodeFactory.create(serviceRepository.getAll());
-        Tree servicesTree = new ServicesTreeFactory(new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath())).create(rootNode);
+        Tree servicesTree = new ServicesTreeFactory(new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), project, jbTabbedPane).create(rootNode);
 
         VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
             private Service upcomingServiceFileDeletion;
@@ -139,7 +142,9 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
             }
         });
 
-        return new JBScrollPane(servicesTree);
+        jbTabbedPane.insertTab("blaaa", null, new JBScrollPane(servicesTree), null, 0);
+
+        return jbTabbedPane;
     }
 
     private void copyExecScriptToTmpIfNeeded(Config config) throws IOException {

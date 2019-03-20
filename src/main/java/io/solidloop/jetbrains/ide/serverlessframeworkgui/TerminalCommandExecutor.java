@@ -2,6 +2,7 @@ package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.ExecutionManager;
+import com.intellij.execution.OutputListener;
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.executors.DefaultRunExecutor;
 import com.intellij.execution.process.OSProcessHandler;
@@ -21,16 +22,21 @@ public class TerminalCommandExecutor implements CommandExecutor {
     private Project project;
 
     @Override
-    public void execute(String terminalTitle, GeneralCommandLine commandLine) throws ExecutionException {
+    public String execute(String terminalTitle, GeneralCommandLine commandLine) throws ExecutionException {
         ProcessHandler processHandler = new OSProcessHandler(commandLine);
         TerminalExecutionConsole consoleView = new TerminalExecutionConsole(project, processHandler);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(consoleView.getComponent());
 
+        OutputListener outputListener = new OutputListener();
+        processHandler.addProcessListener(outputListener);
         processHandler.startNotify();
 
         RunContentDescriptor contentDescriptor = new RunContentDescriptor(consoleView, processHandler, panel, terminalTitle);
         ExecutionManager.getInstance(project).getContentManager().showRunContent(DefaultRunExecutor.getRunExecutorInstance(), contentDescriptor);
+
+        processHandler.waitFor();
+        return outputListener.getOutput().getStdout();
     }
 }
