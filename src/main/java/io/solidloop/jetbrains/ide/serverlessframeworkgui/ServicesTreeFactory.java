@@ -1,8 +1,10 @@
 package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.execution.ExecutionException;
 import com.intellij.icons.AllIcons;
 import com.intellij.ide.structureView.StructureView;
+import com.intellij.ide.structureView.StructureViewBuilder;
 import com.intellij.json.structureView.JsonStructureViewBuilderFactory;
 import com.intellij.openapi.fileEditor.FileEditor;
 import com.intellij.openapi.fileEditor.FileEditorManager;
@@ -10,6 +12,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.openapi.ui.MessageType;
+import com.intellij.openapi.ui.popup.ComponentPopupBuilder;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
@@ -23,9 +26,11 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -40,7 +45,7 @@ public class ServicesTreeFactory {
     @NonNull
     private Project project;
     @NonNull
-    private JTabbedPane component;
+    private ObjectMapper objectMapper;
 
     public Tree create(DefaultMutableTreeNode rootNode) {
         Tree tree = new Tree(rootNode);
@@ -58,22 +63,15 @@ public class ServicesTreeFactory {
                     Function function = (Function) userObject;
 
                     String data = execute("Invoke " + function.getName(), function.getService().getFile().getParent().getCanonicalPath(), createInvokeFunctionCommand(function), tree);
-                    if (data.startsWith("{")) {
-                        LightVirtualFile file = new LightVirtualFile(function.getName() + ".json", data);
-                        FileEditor[] fileEditors = FileEditorManager.getInstance(project).openFile(file, true);
-
-                        PsiFile jsonPsiFile = PsiManager.getInstance(project).findFile(file);
-
-                        StructureView structureView = new JsonStructureViewBuilderFactory()
-                                .getStructureViewBuilder(jsonPsiFile)
-                                .createStructureView(fileEditors[0], project);
-                        component.insertTab("aaaa", null, structureView.getComponent(), null, 1);
+                    if (isValidJson(data)) {
+                        createFunctionInvocationResponseJsonStructureView(function, data, true, true);
                     }
-                } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
+                } else if (anchorSelectionPath != null && SwingUtilities.isRightMouseButton(mouseEvent)) {
                     createPopupMenu((DefaultMutableTreeNode) anchorSelectionPath.getLastPathComponent(), tree).show(tree, mouseEvent.getX(), mouseEvent.getY());
                 }
             }
         });
+
 
         DefaultTreeCellRenderer defaultTreeCellRenderer = new DefaultTreeCellRenderer();
         defaultTreeCellRenderer.setOpenIcon(AllIcons.FileTypes.Diagram);
@@ -82,6 +80,51 @@ public class ServicesTreeFactory {
         tree.setCellRenderer(defaultTreeCellRenderer);
 
         return tree;
+    }
+
+    private boolean isValidJson(String data) {
+        try {
+            objectMapper.readTree(data);
+            return true;
+        } catch (IOException e) {
+            return false;
+        }
+    }
+
+    private void createFunctionInvocationResponseJsonStructureView(Function function, String commandExecutionResponse, boolean openFile, boolean closeFile) {
+        LightVirtualFile file = new LightVirtualFile(function.getName() + ".json", commandExecutionResponse);
+        FileEditor selectedEditor = FileEditorManager.getInstance(project).getSelectedEditor(file);
+
+        if (openFile) {
+            FileEditorManager.getInstance(project).openFile(file, true);
+        }
+
+        PsiFile jsonPsiFile = PsiManager.getInstance(project).findFile(file);
+
+        if (jsonPsiFile != null) {
+            StructureViewBuilder structureViewBuilder = new JsonStructureViewBuilderFactory().getStructureViewBuilder(jsonPsiFile);
+            if (structureViewBuilder != null) {
+                StructureView structureView = structureViewBuilder.createStructureView(selectedEditor, project);
+
+                ComponentPopupBuilder componentPopupBuilder = JBPopupFactory.getInstance()
+                        .createComponentPopupBuilder(structureView.getComponent(), structureView.getComponent())
+                        .setMovable(true)
+                        .setResizable(true)
+                        .setTitle(function.getName());
+
+                        if (closeFile) {
+                            componentPopupBuilder.setCancelCallback(() -> {
+                                FileEditorManager.getInstance(project).closeFile(file);
+                                return true;
+                            });
+                        }
+
+                        componentPopupBuilder
+                                .setMinSize(new Dimension(600, 300))
+                                .createPopup()
+                                .showInFocusCenter();
+            }
+        }
     }
 
     private JBPopupMenu createPopupMenu(DefaultMutableTreeNode node, Tree tree) {
