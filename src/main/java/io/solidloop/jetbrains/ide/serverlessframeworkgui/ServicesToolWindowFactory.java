@@ -46,7 +46,9 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         ServicesTreeComparator servicesTreeComparator = new ServicesTreeComparator();
         ServicesTreeRootNodeFactory servicesTreeRootNodeFactory = new ServicesTreeRootNodeFactory(serviceNodeFactory, servicesTreeComparator);
         DefaultMutableTreeNode rootNode = servicesTreeRootNodeFactory.create(serviceRepository.getAll());
-        Tree servicesTree = new ServicesTreeFactory(new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), project, new ObjectMapper()).create(rootNode);
+        Tree servicesTree = new ServicesTreeFactory(new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), project).create(rootNode);
+
+        project.getMessageBus().connect().subscribe(CommandTopic.COMMAND_EXECUTION_RESPONSE_TOPIC, new CommandExecutionOutputHandlerJsonStructureView(project, new ObjectMapper()));
 
         VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
             private Service upcomingServiceFileDeletion;
