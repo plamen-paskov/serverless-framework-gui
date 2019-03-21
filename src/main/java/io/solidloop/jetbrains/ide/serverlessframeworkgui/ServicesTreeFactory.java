@@ -34,28 +34,12 @@ public class ServicesTreeFactory {
     @NonNull
     private Project project;
 
+    private Tree tree;
+
     public Tree create(DefaultMutableTreeNode rootNode) {
-        Tree tree = new Tree(rootNode);
+        tree = new Tree(rootNode);
         tree.setRootVisible(false);
-        TreeUtil.expandAll(tree);
-
-        tree.addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(final MouseEvent mouseEvent) {
-                Tree tree = (Tree) mouseEvent.getSource();
-                TreePath anchorSelectionPath = tree.getAnchorSelectionPath();
-                Object userObject = anchorSelectionPath != null ? ((DefaultMutableTreeNode) anchorSelectionPath.getLastPathComponent()).getUserObject() : null;
-
-                if (mouseEvent.getClickCount() == 2 && userObject instanceof Function) {
-                    Function function = (Function) userObject;
-
-                    execute("Invoke " + function.getName(), function.getService().getFile().getParent().getCanonicalPath(), createInvokeFunctionCommand(function), tree, new CommandExecutionOutputListener(project, function));
-                } else if (anchorSelectionPath != null && SwingUtilities.isRightMouseButton(mouseEvent)) {
-                    createPopupMenu((DefaultMutableTreeNode) anchorSelectionPath.getLastPathComponent(), tree).show(tree, mouseEvent.getX(), mouseEvent.getY());
-                }
-            }
-        });
-
+        tree.addMouseListener(createMouseListener());
 
         DefaultTreeCellRenderer defaultTreeCellRenderer = new DefaultTreeCellRenderer();
         defaultTreeCellRenderer.setOpenIcon(AllIcons.FileTypes.Diagram);
@@ -63,33 +47,65 @@ public class ServicesTreeFactory {
         defaultTreeCellRenderer.setLeafIcon(AllIcons.Gutter.ImplementingFunctionalInterface);
         tree.setCellRenderer(defaultTreeCellRenderer);
 
+        TreeUtil.expandAll(tree);
+
         return tree;
     }
 
-    private JBPopupMenu createPopupMenu(DefaultMutableTreeNode node, Tree tree) {
-        Object userObject = node.getUserObject();
+    private MouseAdapter createMouseListener() {
+        return new MouseAdapter() {
+            @Override
+            public void mouseClicked(final MouseEvent mouseEvent) {
+                Tree tree = (Tree) mouseEvent.getSource();
+                TreePath selectedTreePath = tree.getAnchorSelectionPath();
 
+                if (selectedTreePath != null) {
+                    Object userObject = ((DefaultMutableTreeNode) selectedTreePath.getLastPathComponent()).getUserObject();
+
+                    if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2 && userObject instanceof Function) {
+                        execute((Function) userObject);
+                    } else if (SwingUtilities.isRightMouseButton(mouseEvent)) {
+                        createContextMenu(userObject).show(tree, mouseEvent.getX(), mouseEvent.getY());
+                    }
+                }
+            }
+        };
+    }
+
+    private void execute(Function function) {
+        execute("Invoke " + function.getName(), function.getService().getFile().getParent().getCanonicalPath(), createInvokeFunctionCommand(function), createInvokeFunctionOutputListener(function));
+    }
+
+    private FunctionCommandOutputListener createInvokeFunctionOutputListener(Function function) {
+        return new FunctionCommandOutputListener(project.getMessageBus(), CommandTopic.FUNCTION_COMMAND_RESPONSE_TOPIC, function);
+    }
+
+    private JBPopupMenu createContextMenu(Object userObject) {
+        return userObject instanceof Service ? createContextMenu((Service) userObject) : createContextMenu((Function) userObject);
+    }
+
+    private JBPopupMenu createContextMenu(Service service) {
         JBPopupMenu popup = new JBPopupMenu();
 
-        if (userObject instanceof Service) {
-            Service service = (Service) userObject;
-            String directory = service.getFile().getParent().getCanonicalPath();
+        String directory = service.getFile().getParent().getCanonicalPath();
 
-            JBMenuItem deployMenuItem = new JBMenuItem("Deploy");
-            deployMenuItem.addActionListener(actionEvent -> execute("Deploy " + service.getName(), directory, createDeployServiceCommand(), tree));
-            popup.add(deployMenuItem);
+        JBMenuItem deployMenuItem = new JBMenuItem("Deploy");
+        deployMenuItem.addActionListener(actionEvent -> execute("Deploy " + service.getName(), directory, createDeployServiceCommand()));
+        popup.add(deployMenuItem);
 
-            JBMenuItem removeMenuItem = new JBMenuItem("Remove");
-            removeMenuItem.addActionListener(actionEvent -> execute("Remove " + service.getName(), directory, createRemoveServiceCommand(), tree));
-            popup.add(removeMenuItem);
-        } else if (userObject instanceof Function) {
-            Function function = (Function) userObject;
-            String directory = function.getService().getFile().getParent().getCanonicalPath();
+        JBMenuItem removeMenuItem = new JBMenuItem("Remove");
+        removeMenuItem.addActionListener(actionEvent -> execute("Remove " + service.getName(), directory, createRemoveServiceCommand()));
+        popup.add(removeMenuItem);
 
-            JBMenuItem deployAndInvokeMenuItem = new JBMenuItem("Deploy and Invoke");
-            deployAndInvokeMenuItem.addActionListener(actionEvent -> execute("Deploy and Invoke " + function.getName(), directory, createDeployAndInvokeFunctionCommand(function), tree));
-            popup.add(deployAndInvokeMenuItem);
-        }
+        return popup;
+    }
+
+    private JBPopupMenu createContextMenu(Function function) {
+        JBPopupMenu popup = new JBPopupMenu();
+
+        JBMenuItem deployAndInvokeMenuItem = new JBMenuItem("Deploy and Invoke");
+        deployAndInvokeMenuItem.addActionListener(actionEvent -> execute("Deploy and Invoke " + function.getName(), function.getService().getFile().getParent().getCanonicalPath(), createDeployAndInvokeFunctionCommand(function)));
+        popup.add(deployAndInvokeMenuItem);
 
         return popup;
     }
@@ -149,11 +165,11 @@ public class ServicesTreeFactory {
         return command;
     }
 
-    private void execute(String terminalTitle, String directory, List<String> command, Tree tree) {
-        execute(terminalTitle, directory, command, tree, null);
+    private void execute(String terminalTitle, String directory, List<String> command) {
+        execute(terminalTitle, directory, command, null);
     }
 
-    private void execute(String terminalTitle, String directory, List<String> command, Tree tree, OutputListener outputListener) {
+    private void execute(String terminalTitle, String directory, List<String> command, OutputListener outputListener) {
         try {
             commandExecutor.execute(terminalTitle, commandLineFactory.create(directory, command), outputListener);
         } catch (ExecutionException e) {

@@ -20,12 +20,14 @@ import java.awt.*;
 import java.io.IOException;
 
 @AllArgsConstructor
-public class CommandExecutionOutputHandlerJsonStructureView implements CommandExecutionOutputHandler {
+public class FunctionCommandOutputHandlerJsonStructureView implements FunctionCommandOutputHandler {
     private Project project;
     private ObjectMapper objectMapper;
+    private boolean openFile;
+    private boolean closeFile;
 
     @Override
-    public void receive(final Function function, final Output output, final boolean openFile, final boolean closeFile) {
+    public void receive(final Output output, final Function function) {
         ApplicationManager.getApplication().invokeLater(() -> {
             String data = output.getStdout();
 

@@ -48,7 +48,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         DefaultMutableTreeNode rootNode = servicesTreeRootNodeFactory.create(serviceRepository.getAll());
         Tree servicesTree = new ServicesTreeFactory(new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), project).create(rootNode);
 
-        project.getMessageBus().connect().subscribe(CommandTopic.COMMAND_EXECUTION_RESPONSE_TOPIC, new CommandExecutionOutputHandlerJsonStructureView(project, new ObjectMapper()));
+        project.getMessageBus().connect().subscribe(CommandTopic.FUNCTION_COMMAND_RESPONSE_TOPIC, new FunctionCommandOutputHandlerJsonStructureView(project, new ObjectMapper(), true, true));
 
         VirtualFileManager.getInstance().addVirtualFileListener(new VirtualFileListener() {
             private Service upcomingServiceFileDeletion;
