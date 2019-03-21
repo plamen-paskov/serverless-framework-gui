@@ -9,6 +9,7 @@ import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.messages.Topic;
 import com.intellij.util.ui.tree.TreeUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -33,6 +34,8 @@ public class ServicesTreeFactory {
     private CommandLineFactory commandLineFactory;
     @NonNull
     private Project project;
+    @NonNull
+    private Topic<FunctionCommandOutputHandler> topic;
 
     private Tree tree;
 
@@ -77,7 +80,7 @@ public class ServicesTreeFactory {
     }
 
     private FunctionCommandOutputListener createInvokeFunctionOutputListener(Function function) {
-        return new FunctionCommandOutputListener(project.getMessageBus(), CommandTopic.FUNCTION_COMMAND_RESPONSE_TOPIC, function);
+        return new FunctionCommandOutputListener(project.getMessageBus(), topic, function);
     }
 
     private JBPopupMenu createContextMenu(Object userObject) {
