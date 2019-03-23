@@ -46,7 +46,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         DefaultMutableTreeNode rootNode = servicesTreeRootNodeFactory.create(serviceRepository.getAll());
         Tree servicesTree = new ServicesTreeFactory(new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), project, functionCommandResponseTopic).create(rootNode);
 
-        project.getMessageBus().connect().subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerJsonStructureView(project, new ObjectMapper(), true, true));
+        project.getMessageBus().connect().subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerJsonStructureView(project, new ObjectMapper(), Configuration.getInstance()));
         VirtualFileManager.getInstance().addVirtualFileListener(new ServiceVirtualFileListener(servicesTree, serviceRepository, serviceFactory, serviceNodeFactory, servicesTreeComparator));
 
         return new JBScrollPane(servicesTree);

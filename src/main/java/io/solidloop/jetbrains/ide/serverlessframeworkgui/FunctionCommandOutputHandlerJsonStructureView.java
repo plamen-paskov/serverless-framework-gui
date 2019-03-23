@@ -23,22 +23,21 @@ import java.io.IOException;
 public class FunctionCommandOutputHandlerJsonStructureView implements FunctionCommandOutputHandler {
     private Project project;
     private ObjectMapper objectMapper;
-    private boolean openFile;
-    private boolean closeFile;
+    private Configuration configuration;
 
     @Override
     public void receive(final Output output, final Function function) {
         ApplicationManager.getApplication().invokeLater(() -> {
             String data = output.getStdout();
 
-            if (isValidJson(data)) {
-                LightVirtualFile file = new LightVirtualFile(function.getName() + ".json", output.getStdout());
-                FileEditor selectedEditor = FileEditorManager.getInstance(project).getSelectedEditor(file);
+            LightVirtualFile file = new LightVirtualFile(function.getName() + ".json", output.getStdout());
+            FileEditor selectedEditor = FileEditorManager.getInstance(project).getSelectedEditor(file);
 
-                if (openFile) {
-                    FileEditorManager.getInstance(project).openFile(file, true);
-                }
+            if (configuration.isOpenFunctionInvocationResponseFile()) {
+                FileEditorManager.getInstance(project).openFile(file, true);
+            }
 
+            if (isValidJson(data) && configuration.isShowJsonStructureView()) {
                 PsiFile jsonPsiFile = PsiManager.getInstance(project).findFile(file);
 
                 if (jsonPsiFile != null) {
@@ -52,7 +51,7 @@ public class FunctionCommandOutputHandlerJsonStructureView implements FunctionCo
                                 .setResizable(true)
                                 .setTitle(function.getName());
 
-                        if (openFile && closeFile) {
+                        if (configuration.isOpenFunctionInvocationResponseFile() && configuration.isCloseFunctionInvocationResponseFile()) {
                             componentPopupBuilder.setCancelCallback(() -> {
                                 FileEditorManager.getInstance(project).closeFile(file);
                                 return true;
