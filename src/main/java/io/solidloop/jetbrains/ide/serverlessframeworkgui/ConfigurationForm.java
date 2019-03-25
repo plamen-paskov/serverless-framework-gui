@@ -2,10 +2,12 @@ package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
 import com.intellij.openapi.options.Configurable;
 import com.intellij.ui.components.JBCheckBox;
+import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
+import java.awt.*;
 
 public class ConfigurationForm implements Configurable {
     private FormChangeListener formChangeListener = new FormChangeListener();
@@ -41,24 +43,12 @@ public class ConfigurationForm implements Configurable {
             formChangeListener.add(checkboxOpenFile);
 
             panel = new JPanel();
-            GroupLayout layout = new GroupLayout(panel);
+            BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
             panel.setLayout(layout);
 
-            layout.setVerticalGroup(
-                    layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                    .addComponent(checkboxShowJsonStructureView))
-                            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                    .addComponent(checkboxCloseFile))
-                            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                    .addComponent(checkboxOpenFile)));
-
-            layout.setHorizontalGroup(
-                    layout.createSequentialGroup()
-                            .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
-                                    .addComponent(checkboxShowJsonStructureView)
-                                    .addComponent(checkboxCloseFile)
-                                    .addComponent(checkboxOpenFile)));
+            panel.add(checkboxShowJsonStructureView);
+            panel.add(checkboxCloseFile);
+            panel.add(checkboxOpenFile);
         }
 
         return panel;
