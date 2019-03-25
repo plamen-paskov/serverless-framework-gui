@@ -28,14 +28,17 @@ public class ConfigurationForm implements Configurable {
             checkboxShowJsonStructureView = new JBCheckBox("Show JSON Structure View popup when function invocation response is valid JSON");
             checkboxCloseFile = new JBCheckBox("Close function invocation response file when JSON Structure View popup is closed");
 
+            toggleCheckboxes();
+            checkboxShowJsonStructureView.addChangeListener(changeEvent -> toggleCheckboxes());
+
             Configuration configuration = Configuration.getInstance();
             checkboxShowJsonStructureView.setSelected(configuration.isShowJsonStructureView());
-            checkboxOpenFile.setSelected(configuration.isOpenFunctionInvocationResponseFile());
             checkboxCloseFile.setSelected(configuration.isCloseFunctionInvocationResponseFile());
+            checkboxOpenFile.setSelected(configuration.isOpenFunctionInvocationResponseFile());
 
             formChangeListener.add(checkboxShowJsonStructureView);
-            formChangeListener.add(checkboxOpenFile);
             formChangeListener.add(checkboxCloseFile);
+            formChangeListener.add(checkboxOpenFile);
 
             panel = new JPanel();
             GroupLayout layout = new GroupLayout(panel);
@@ -46,19 +49,23 @@ public class ConfigurationForm implements Configurable {
                             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
                                     .addComponent(checkboxShowJsonStructureView))
                             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                    .addComponent(checkboxOpenFile))
+                                    .addComponent(checkboxCloseFile))
                             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.BASELINE)
-                                    .addComponent(checkboxCloseFile)));
+                                    .addComponent(checkboxOpenFile)));
 
             layout.setHorizontalGroup(
                     layout.createSequentialGroup()
                             .addGroup(layout.createParallelGroup(GroupLayout.Alignment.LEADING)
                                     .addComponent(checkboxShowJsonStructureView)
-                                    .addComponent(checkboxOpenFile)
-                                    .addComponent(checkboxCloseFile)));
+                                    .addComponent(checkboxCloseFile)
+                                    .addComponent(checkboxOpenFile)));
         }
 
         return panel;
+    }
+
+    private void toggleCheckboxes() {
+        checkboxCloseFile.setEnabled(checkboxShowJsonStructureView.isSelected());
     }
 
     @Override
@@ -70,11 +77,12 @@ public class ConfigurationForm implements Configurable {
     public void apply() {
         Configuration configuration = Configuration.getInstance();
         configuration.setShowJsonStructureView(checkboxShowJsonStructureView.isSelected());
-        configuration.setOpenFunctionInvocationResponseFile(checkboxOpenFile.isSelected());
         configuration.setCloseFunctionInvocationResponseFile(checkboxCloseFile.isSelected());
+        configuration.setOpenFunctionInvocationResponseFile(checkboxOpenFile.isSelected());
+
         formChangeListener.add(checkboxShowJsonStructureView);
-        formChangeListener.add(checkboxOpenFile);
         formChangeListener.add(checkboxCloseFile);
+        formChangeListener.add(checkboxOpenFile);
     }
 
     @Override
