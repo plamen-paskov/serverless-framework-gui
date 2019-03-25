@@ -20,13 +20,16 @@
 
     <depends>com.intellij.modules.lang</depends>
 
-    <change-notes>
-        - Code cleanup
-        - The plugin now supports version 2017.3.6+
-        - Added context menu for services and functions (deploy and remove a service; deploy and invoke a function)
-        - Added show JSON Structure View popup when function invocation response is valid JSON string
-        - Added plugin configuration
-    </change-notes>
+    <change-notes><![CDATA[
+    <ul>
+        <li>Fix change notes formatting</li>
+        <li>Code cleanup</li>
+        <li>The plugin now supports version 2017.3.6+</li>
+        <li>Added context menu for services and functions (deploy and remove a service; deploy and invoke a function)</li>
+        <li>Added show JSON Structure View popup when function invocation response is valid JSON string</li>
+        <li>Added plugin configuration</li>
+    </ul>
+    ]]></change-notes>
 
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow id="Serverless Framework GUI" anchor="right" factoryClass="io.solidloop.jetbrains.ide.serverlessframeworkgui.ServicesToolWindowFactory"/>
