@@ -19,6 +19,9 @@ dependencies {
     compile group: 'com.fasterxml.jackson.dataformat', name: 'jackson-dataformat-properties', version: '2.9.8'
     compile group: 'com.fasterxml.jackson.core', name: 'jackson-databind', version: '2.9.8'
     compile group: 'commons-io', name: 'commons-io', version: '2.6'
+    compile('com.brsanthu:google-analytics-java:2.0.0') {
+        exclude group: 'org.slf4j'
+    }
 }
 
 intellij {

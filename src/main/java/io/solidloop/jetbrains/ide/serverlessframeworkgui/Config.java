@@ -6,4 +6,5 @@ import lombok.Data;
 public class Config {
     private String execScriptFilesystemPath;
     private String execScriptJarPath;
+    private String googleAnalyticsTrackingId;
 }

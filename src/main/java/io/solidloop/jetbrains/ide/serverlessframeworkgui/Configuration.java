@@ -6,7 +6,7 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.project.ProjectUtil;
 
-@State(name = "Configuration", storages = @Storage("serverless-framework-gui.xml"))
+@State(name = "Configuration", storages = @Storage("serverless-framework-gui/config.xml"))
 public class Configuration implements PersistentStateComponent<Configuration.OptionSet> {
     private OptionSet optionSet = new OptionSet();
 

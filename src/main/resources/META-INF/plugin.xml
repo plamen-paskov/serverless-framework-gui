@@ -35,5 +35,6 @@
         <toolWindow id="Serverless Framework GUI" anchor="right" factoryClass="io.solidloop.jetbrains.ide.serverlessframeworkgui.ServicesToolWindowFactory"/>
         <projectConfigurable displayName="Serverless Framework GUI" groupId="tools" instance="io.solidloop.jetbrains.ide.serverlessframeworkgui.ConfigurationForm"/>
         <projectService serviceImplementation="io.solidloop.jetbrains.ide.serverlessframeworkgui.Configuration" />
+        <projectService serviceImplementation="io.solidloop.jetbrains.ide.serverlessframeworkgui.User" />
     </extensions>
 </idea-plugin>
