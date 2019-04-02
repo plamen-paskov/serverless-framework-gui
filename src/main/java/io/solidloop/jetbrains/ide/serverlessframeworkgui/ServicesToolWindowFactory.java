@@ -48,12 +48,13 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
 
     private ActionListener getAcceptTcActionListener(Project project, User user, ToolWindow toolWindow) {
         return actionEvent -> {
-            user.setTcAccepted(true);
             try {
                 ContentManager contentManager = toolWindow.getContentManager();
                 contentManager.removeContent(contentManager.getSelectedContent(), true);
                 Content content = ContentFactory.SERVICE.getInstance().createContent(init(project, user), DISPLAY_NAME, false);
                 toolWindow.getContentManager().addContent(content);
+
+                user.setTcAccepted(true);
             } catch (IOException e) {
                 reportException(e);
             }
