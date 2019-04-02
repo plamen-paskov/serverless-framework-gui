@@ -16,10 +16,12 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.messages.Topic;
+import com.intellij.util.ui.JBUI;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
+import javax.swing.event.HyperlinkEvent;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.ActionListener;
@@ -30,12 +32,10 @@ import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class ServicesToolWindowFactory implements ToolWindowFactory {
-    private final String DISPLAY_NAME = "Serverless Framework GUI";
-
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         try {
-            Content content = ContentFactory.SERVICE.getInstance().createContent(createWindowContent(project, toolWindow), DISPLAY_NAME, false);
+            Content content = ContentFactory.SERVICE.getInstance().createContent(createWindowContent(project, toolWindow), null, false);
             toolWindow.getContentManager().addContent(content);
         } catch (IOException e) {
             reportException(e);
@@ -55,7 +55,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
 
                 ContentManager contentManager = toolWindow.getContentManager();
                 contentManager.removeContent(contentManager.getSelectedContent(), true);
-                Content content = ContentFactory.SERVICE.getInstance().createContent(init(project, user), DISPLAY_NAME, false);
+                Content content = ContentFactory.SERVICE.getInstance().createContent(init(project, user), null, false);
                 contentManager.addContent(content);
             } catch (IOException e) {
                 reportException(e);
@@ -64,16 +64,36 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
     }
 
     private JPanel createTc(ActionListener acceptActionListener) throws IOException {
-        JScrollPane tc = new JBScrollPane(new JTextArea(readTcFile()));
-        tc.setAlignmentX(Component.CENTER_ALIGNMENT);
+        JEditorPane jEditorPane = new JEditorPane();
+        jEditorPane.setEditorKit(JEditorPane.createEditorKitForContentType("text/html"));
+        jEditorPane.setContentType("text/html");
+        jEditorPane.setText(readTcFile());
+        jEditorPane.setEditable(false);
+        jEditorPane.addHyperlinkListener(e -> {
+            if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+                Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
+                if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
+                    try {
+                        desktop.browse(e.getURL().toURI());
+                    } catch (Exception e1) {
+                        reportException(e1);
+                    }
+                }
+            }
+        });
 
-        JButton accept = new JButton("Accept");
+        JScrollPane tc = new JBScrollPane(jEditorPane);
+        tc.setAlignmentX(Component.CENTER_ALIGNMENT);
+        tc.setBorder(JBUI.Borders.empty(10));
+
+        JButton accept = new JButton("I AGREE");
         accept.addActionListener(acceptActionListener);
         accept.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JPanel panel = new JPanel();
         BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
         panel.setLayout(layout);
+        panel.setBorder(JBUI.Borders.empty(10));
 
         panel.add(tc);
         panel.add(accept);
@@ -130,7 +150,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
     }
 
     private String readTcFile() throws IOException {
-        InputStream inputStream = getClass().getResourceAsStream("/tc.txt");
+        InputStream inputStream = getClass().getResourceAsStream("/tc.html");
 
         StringBuilder textBuilder = new StringBuilder();
         try (Reader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
