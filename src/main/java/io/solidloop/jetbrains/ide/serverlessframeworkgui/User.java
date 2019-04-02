@@ -9,7 +9,7 @@ import org.jetbrains.annotations.Nullable;
 @Data
 @State(name = "User", storages = @Storage("serverless-framework-gui/user.xml"))
 public class User implements PersistentStateComponent<User> {
-    private String userId;
+    private String id;
     private boolean tcAccepted = false;
 
     @Nullable
@@ -20,7 +20,7 @@ public class User implements PersistentStateComponent<User> {
 
     @Override
     public void loadState(final User state) {
-        setUserId(state.getUserId());
+        setId(state.getId());
         setTcAccepted(state.isTcAccepted());
     }
 }

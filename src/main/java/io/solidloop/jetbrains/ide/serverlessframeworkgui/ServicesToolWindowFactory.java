@@ -49,7 +49,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
     private ActionListener getAcceptTcActionListener(Project project, User user, ToolWindow toolWindow) {
         return actionEvent -> {
             try {
-                user.setUserId(UUID.randomUUID().toString());
+                user.setId(UUID.randomUUID().toString());
                 user.setTcAccepted(true);
 
                 ContentManager contentManager = toolWindow.getContentManager();

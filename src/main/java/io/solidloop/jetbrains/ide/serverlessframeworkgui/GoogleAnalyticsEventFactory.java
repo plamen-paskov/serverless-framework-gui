@@ -32,7 +32,7 @@ public class GoogleAnalyticsEventFactory {
                 .event()
                 .applicationId(pluginDescriptor.getName())
                 .applicationVersion(pluginDescriptor.getVersion())
-                .clientId(user.getUserId())
+                .clientId(user.getId())
                 .eventCategory("General");
     }
 }
