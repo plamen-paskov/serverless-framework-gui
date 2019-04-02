@@ -23,9 +23,10 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.awt.*;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.UUID;
 
 public class ServicesToolWindowFactory implements ToolWindowFactory {
@@ -62,8 +63,8 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         };
     }
 
-    private JPanel createTc(ActionListener acceptActionListener) {
-        JScrollPane tc = new JBScrollPane(new JTextArea("terms and conditions\nbla bla"));
+    private JPanel createTc(ActionListener acceptActionListener) throws IOException {
+        JScrollPane tc = new JBScrollPane(new JTextArea(readTcFile()));
         tc.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         JButton accept = new JButton("Accept");
@@ -126,5 +127,19 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
 
     private void reportException(Exception e) {
         PluginManager.getLogger().error(e);
+    }
+
+    private String readTcFile() throws IOException {
+        InputStream inputStream = getClass().getResourceAsStream("/tc.txt");
+
+        StringBuilder textBuilder = new StringBuilder();
+        try (Reader reader = new BufferedReader(new InputStreamReader(inputStream, Charset.forName(StandardCharsets.UTF_8.name())))) {
+            int c;
+            while ((c = reader.read()) != -1) {
+                textBuilder.append((char) c);
+            }
+        }
+
+        return textBuilder.toString();
     }
 }
