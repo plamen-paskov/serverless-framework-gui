@@ -70,7 +70,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         jEditorPane.setText(readTcFile());
         jEditorPane.setEditable(false);
         jEditorPane.addHyperlinkListener(e -> {
-            if(e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
+            if (e.getEventType() == HyperlinkEvent.EventType.ACTIVATED) {
                 Desktop desktop = Desktop.isDesktopSupported() ? Desktop.getDesktop() : null;
                 if (desktop != null && desktop.isSupported(Desktop.Action.BROWSE)) {
                     try {

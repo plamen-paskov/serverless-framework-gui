@@ -2,12 +2,10 @@ package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
 import com.intellij.openapi.options.Configurable;
 import com.intellij.ui.components.JBCheckBox;
-import com.intellij.util.ui.JBUI;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
-import java.awt.*;
 
 public class ConfigurationForm implements Configurable {
     private FormChangeListener formChangeListener = new FormChangeListener();
