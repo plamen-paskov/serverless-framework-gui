@@ -18,7 +18,7 @@ public class GoogleAnalyticsPluginStats extends AbstractPluginStateListener<Even
     protected EventHit getUpdateEvent(final IdeaPluginDescriptor pluginDescriptor, final IdeaPluginDescriptor installedPluginDescriptor) {
         return createEvent(pluginDescriptor)
                 .eventAction("upgrade")
-                .customMetric(1, installedPluginDescriptor.getVersion());
+                .customMetric(GoogleAnalyticsCustomMetrics.PLUGIN_PREVIOUS_VERSION.getIndex(), installedPluginDescriptor.getVersion());
     }
 
     @Override

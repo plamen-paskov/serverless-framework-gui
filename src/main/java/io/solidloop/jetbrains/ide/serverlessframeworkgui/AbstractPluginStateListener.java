@@ -7,11 +7,8 @@ import org.jetbrains.annotations.NotNull;
 
 public abstract class AbstractPluginStateListener<E> implements PluginStateListener {
     abstract protected E getInstallEvent(IdeaPluginDescriptor pluginDescriptor);
-
     abstract protected E getUpdateEvent(IdeaPluginDescriptor pluginDescriptor, IdeaPluginDescriptor installedPluginDescriptor);
-
     abstract protected E getUninstallEvent(IdeaPluginDescriptor pluginDescriptor);
-
     abstract protected void send(E event);
 
     @Override
