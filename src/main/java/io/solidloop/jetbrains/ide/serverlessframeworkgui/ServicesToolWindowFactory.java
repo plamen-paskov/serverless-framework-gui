@@ -49,12 +49,13 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
     private ActionListener getAcceptTcActionListener(Project project, User user, ToolWindow toolWindow) {
         return actionEvent -> {
             try {
+                user.setUserId(UUID.randomUUID().toString());
+                user.setTcAccepted(true);
+
                 ContentManager contentManager = toolWindow.getContentManager();
                 contentManager.removeContent(contentManager.getSelectedContent(), true);
                 Content content = ContentFactory.SERVICE.getInstance().createContent(init(project, user), DISPLAY_NAME, false);
-                toolWindow.getContentManager().addContent(content);
-
-                user.setTcAccepted(true);
+                contentManager.addContent(content);
             } catch (IOException e) {
                 reportException(e);
             }
@@ -100,11 +101,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
     }
 
     private User createClientState(Project project) {
-        User user = ServiceManager.getService(project, User.class);
-        if (user.getUserId() == null) {
-            user.setUserId(UUID.randomUUID().toString());
-        }
-        return user;
+        return ServiceManager.getService(project, User.class);
     }
 
     private void copyExecScriptToTmpIfNeeded(Config config) throws IOException {
