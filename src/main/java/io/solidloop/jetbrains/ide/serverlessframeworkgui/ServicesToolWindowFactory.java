@@ -83,6 +83,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         });
 
         JScrollPane tc = new JBScrollPane(jEditorPane);
+        SwingUtilities.invokeLater(() -> tc.getVerticalScrollBar().setValue(0));
         tc.setAlignmentX(Component.CENTER_ALIGNMENT);
         tc.setBorder(JBUI.Borders.empty(10));
 
