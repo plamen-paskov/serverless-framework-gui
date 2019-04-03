@@ -22,7 +22,7 @@ dependencies {
 }
 
 intellij {
-    version '2017.3.6'
+    version '2017.3'
 }
 
 runIde { jbreVersion 'jbrex8u202b1483.4' }
