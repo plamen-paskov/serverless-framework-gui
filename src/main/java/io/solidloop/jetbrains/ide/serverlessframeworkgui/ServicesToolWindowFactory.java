@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 import com.intellij.ide.plugins.PluginManager;
+import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.ToolWindow;
@@ -12,6 +13,7 @@ import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.Tree;
+import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.messages.Topic;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
@@ -46,7 +48,11 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         DefaultMutableTreeNode rootNode = servicesTreeRootNodeFactory.create(serviceRepository.getAll());
         Tree servicesTree = new ServicesTreeFactory(new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), project, functionCommandResponseTopic).create(rootNode);
 
-        project.getMessageBus().connect().subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerJsonStructureView(project, new ObjectMapper(), Configuration.getInstance()));
+        Configuration configuration = Configuration.getInstance();
+        MessageBusConnection messageBusConnection = project.getMessageBus().connect();
+        FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(ToolWindowUtil.getStructureView(project), configuration);
+        messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, configuration));
+        messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, functionInvocationResponseFileEditorManagerListener);
         VirtualFileManager.getInstance().addVirtualFileListener(new ServiceVirtualFileListener(servicesTree, serviceRepository, serviceFactory, serviceNodeFactory, servicesTreeComparator));
 
         return new JBScrollPane(servicesTree);
