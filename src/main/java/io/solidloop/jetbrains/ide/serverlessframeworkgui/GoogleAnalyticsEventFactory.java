@@ -31,10 +31,10 @@ public class GoogleAnalyticsEventFactory {
     public EventHit create(IdeaPluginDescriptor pluginDescriptor) {
         return getGoogleAnalytics()
                 .event()
-                .applicationId(pluginDescriptor.getName())
+                .applicationName(pluginDescriptor.getName())
                 .applicationVersion(pluginDescriptor.getVersion())
                 .clientId(user.getId())
-                .eventCategory("General")
+                .eventCategory("Installations")
                 .customMetric(GoogleAnalyticsCustomMetrics.PRODUCT_NAME.getIndex(), ApplicationInfo.getInstance().getVersionName())
                 .customMetric(GoogleAnalyticsCustomMetrics.PRODUCT_VERSION.getIndex(), ApplicationInfo.getInstance().getFullVersion())
                 .customMetric(GoogleAnalyticsCustomMetrics.PRODUCT_BUILD_NUMBER.getIndex(), ApplicationInfo.getInstance().getBuild().asString())
