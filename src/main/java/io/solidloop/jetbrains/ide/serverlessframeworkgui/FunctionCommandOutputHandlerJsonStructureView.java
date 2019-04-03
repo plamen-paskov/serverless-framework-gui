@@ -31,10 +31,12 @@ public class FunctionCommandOutputHandlerJsonStructureView implements FunctionCo
             String data = output.getStdout();
 
             LightVirtualFile file = new LightVirtualFile(function.getName() + ".json", output.getStdout());
-            FileEditor selectedEditor = FileEditorManager.getInstance(project).getSelectedEditor(file);
 
+            FileEditorManager fileEditorManager = FileEditorManager.getInstance(project);
+            FileEditor selectedEditor = null;
             if (configuration.isOpenFunctionInvocationResponseFile()) {
-                FileEditorManager.getInstance(project).openFile(file, true);
+                fileEditorManager.openFile(file, true);
+                selectedEditor = fileEditorManager.getSelectedEditor(file);
             }
 
             if (isValidJson(data) && configuration.isShowJsonStructureView()) {
@@ -42,7 +44,7 @@ public class FunctionCommandOutputHandlerJsonStructureView implements FunctionCo
 
                 if (jsonPsiFile != null) {
                     StructureViewBuilder structureViewBuilder = new JsonStructureViewBuilderFactory().getStructureViewBuilder(jsonPsiFile);
-                    if (structureViewBuilder != null) {
+                    if (structureViewBuilder != null && selectedEditor != null) {
                         StructureView structureView = structureViewBuilder.createStructureView(selectedEditor, project);
 
                         ComponentPopupBuilder componentPopupBuilder = JBPopupFactory.getInstance()
