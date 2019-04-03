@@ -19,15 +19,11 @@
     ]]></description>
 
     <depends>com.intellij.modules.lang</depends>
+    <idea-version since-build="173" until-build="191.*"/>
 
     <change-notes><![CDATA[
     <ul>
-        <li>Fix change notes formatting</li>
-        <li>Code cleanup</li>
-        <li>The plugin now supports version 2017.3.6+</li>
-        <li>Added context menu for services and functions (deploy and remove a service; deploy and invoke a function)</li>
-        <li>Added show JSON Structure View popup when function invocation response is valid JSON string</li>
-        <li>Added plugin configuration</li>
+        <li>The plugin is now available for 2017.3 - 2019.1 of the IDEs</li>
     </ul>
     ]]></change-notes>
 
