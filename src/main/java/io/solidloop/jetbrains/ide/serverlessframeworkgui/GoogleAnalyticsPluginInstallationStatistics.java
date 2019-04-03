@@ -5,26 +5,29 @@ import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class GoogleAnalyticsPluginStats extends AbstractPluginStateListener<EventHit> {
+public class GoogleAnalyticsPluginInstallationStatistics extends AbstractPluginStateListener<EventHit> {
     private GoogleAnalyticsEventFactory googleAnalyticsEventFactory;
 
     @Override
     protected EventHit getInstallEvent(final IdeaPluginDescriptor pluginDescriptor) {
         return createEvent(pluginDescriptor)
-                .eventAction("install");
+                .eventAction("install")
+                .eventLabel("Install plugin");
     }
 
     @Override
     protected EventHit getUpdateEvent(final IdeaPluginDescriptor pluginDescriptor, final IdeaPluginDescriptor installedPluginDescriptor) {
         return createEvent(pluginDescriptor)
                 .eventAction("upgrade")
+                .eventLabel("Upgrade plugin")
                 .customMetric(GoogleAnalyticsCustomMetrics.PLUGIN_PREVIOUS_VERSION.getIndex(), installedPluginDescriptor.getVersion());
     }
 
     @Override
     protected EventHit getUninstallEvent(final IdeaPluginDescriptor pluginDescriptor) {
         return createEvent(pluginDescriptor)
-                .eventAction("uninstall");
+                .eventAction("uninstall")
+                .eventLabel("Uninstall plugin");
     }
 
     @Override

@@ -117,7 +117,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
 
         project.getMessageBus().connect().subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerJsonStructureView(project, new ObjectMapper(), Configuration.getInstance()));
         VirtualFileManager.getInstance().addVirtualFileListener(new ServiceVirtualFileListener(servicesTree, serviceRepository, serviceFactory, serviceNodeFactory, servicesTreeComparator));
-        PluginInstaller.addStateListener(new GoogleAnalyticsPluginStats(new GoogleAnalyticsEventFactory(config.getGoogleAnalyticsTrackingId(), user)));
+        PluginInstaller.addStateListener(new GoogleAnalyticsPluginInstallationStatistics(new GoogleAnalyticsEventFactory(config.getGoogleAnalyticsTrackingId(), user)));
 
         return new JBScrollPane(servicesTree);
     }
