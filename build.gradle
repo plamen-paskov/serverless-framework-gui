@@ -5,7 +5,7 @@ plugins {
 }
 
 group 'io.solidloop.jetbrains.ide'
-version '1.2.0'
+version '1.2.1'
 
 sourceCompatibility = 1.8
 
@@ -23,6 +23,11 @@ dependencies {
 
 intellij {
     version '2017.3'
+
+    patchPluginXml {
+        sinceBuild '173.0'
+        untilBuild '191.*'
+    }
 }
 
 runIde { jbreVersion 'jbrex8u202b1483.4' }
