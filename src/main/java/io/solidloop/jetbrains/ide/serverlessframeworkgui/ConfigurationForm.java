@@ -26,7 +26,7 @@ public class ConfigurationForm implements Configurable {
     public JComponent createComponent() {
         if (panel == null) {
             openFunctionInvocationResponseAsFile = new JBCheckBox("Open function invocation response as a file");
-            openStructureView = new JBCheckBox("Open Structure View");
+            openStructureView = new JBCheckBox("Open Structure View when function invocation response file is opened");
             closeStructureView = new JBCheckBox("Close Structure View when all function invocation response files are closed");
 
             openFunctionInvocationResponseAsFile.setSelected(configuration.isOpenFunctionInvocationResponseAsFile());
