@@ -17,21 +17,36 @@ public class FunctionCommandOutputHandlerStructureView implements FunctionComman
     @Override
     public void receive(final Output output, final Function function) {
         ApplicationManager.getApplication().invokeLater(() -> {
-            LightVirtualFile file = new LightVirtualFile(function.getName() + ".json", output.getStdout());
+            String ext = guessFileExt(output.getStdout());
 
-            if (configuration.isOpenFunctionInvocationResponseAsFile()) {
-                FileEditorManager.getInstance(project).openFile(file, true);
+            if (ext != null) {
+                LightVirtualFile file = new LightVirtualFile(function.getName() + "." + ext, output.getStdout());
 
-                ToolWindow structureView = ToolWindowUtil.getStructureView(project);
+                if (configuration.isOpenFunctionInvocationResponseAsFile()) {
+                    FileEditorManager.getInstance(project).openFile(file, true);
 
-                if (configuration.isOpenStructureView() && !structureView.isVisible()) {
-                    structureView.show(null);
-                }
+                    ToolWindow structureView = ToolWindowUtil.getStructureView(project);
 
-                if (configuration.isCloseStructureView()) {
-                    functionInvocationResponseFileEditorManagerListener.addFile(file);
+                    if (configuration.isOpenStructureView() && !structureView.isVisible()) {
+                        structureView.show(null);
+                    }
+
+                    if (configuration.isCloseStructureView()) {
+                        functionInvocationResponseFileEditorManagerListener.addFile(file);
+                    }
                 }
             }
         });
+    }
+
+    private String guessFileExt(String content) {
+        content = content.trim();
+        if (content.startsWith("{") && content.endsWith("}")) {
+            return "json";
+        } else if (content.startsWith("<") && content.endsWith(">")) {
+            return "xml";
+        }
+
+        return null;
     }
 }
