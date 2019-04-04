@@ -24,6 +24,7 @@
     <change-notes><![CDATA[
     <ul>
         <li>The plugin is now available for 2017.3 - 2019.1 of the IDEs</li>
+        <li>Open built-in structure view window instead of custom popup</li>
     </ul>
     ]]></change-notes>
 
