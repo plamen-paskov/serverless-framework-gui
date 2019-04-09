@@ -147,13 +147,18 @@ public class ServicesTreeFactory {
     }
 
     private List<String> createInvokeFunctionCommand(Function function) {
+        Service service = function.getService();
+
         List<String> command = new ArrayList<>();
         command.add(SERVERLESS_EXECUTABLE);
         command.add("invoke");
         command.add("-f");
         command.add(function.getName());
-        command.add("-r");
-        command.add(function.getService().getRegion());
+
+        if (service.getRegion() != null) {
+            command.add("-r");
+            command.add(function.getService().getRegion());
+        }
 
         String dataFile = getDataFile(function);
         File file = new File(dataFile);
