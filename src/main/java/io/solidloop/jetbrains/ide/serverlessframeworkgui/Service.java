@@ -1,50 +1,70 @@
 package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
-import lombok.Data;
+import lombok.*;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.Objects;
 import java.util.Set;
 
-@Data
+@RequiredArgsConstructor
 public class Service implements Comparable<Service> {
+    @NonNull
+    private Project project;
+
+    private String fullName;
+
+    @Getter
+    @Setter
     private VirtualFile file;
+
+    @Getter
+    @Setter
     private String name;
+
+    @Getter
+    @Setter
     private String stage;
+
+    @Getter
+    @Setter
     private String region;
+
+    @Getter
+    @Setter
     private Set<String> functions;
 
-    @Override
-    public String toString() {
-        return name;
+    public void updateFullName() {
+        fullName = " [ " + VfsUtilCore.getRelativePath(file, project.getBaseDir()) + " ]";
+        if (name != null) {
+            fullName = name + fullName;
+        }
     }
 
     @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
+    public String toString() {
+        return fullName;
+    }
 
-        if (!(obj instanceof Service) && !(obj instanceof VirtualFile)) {
+    @Override
+    public boolean equals(Object otherObject) {
+        if (!(otherObject instanceof Service) && !(otherObject instanceof VirtualFile)) {
             return false;
-        }
-
-        if (obj == this) {
+        } else if (otherObject == this) {
             return true;
         }
 
-        String currentFilePath = file.getCanonicalPath();
-        String objectFilePath = obj instanceof Service ? ((Service) obj).getFile().getCanonicalPath() : ((VirtualFile) obj).getCanonicalPath();
-
-        return Objects.equals(currentFilePath, objectFilePath);
+        VirtualFile otherObjectFile = otherObject instanceof Service ? ((Service) otherObject).getFile() : (VirtualFile) otherObject;
+        return Objects.equals(file, otherObjectFile);
     }
 
     @Override
     public int hashCode() {
         return new HashCodeBuilder(17, 37).
-                append(file.getCanonicalPath()).
+                append(file).
                 toHashCode();
     }
 

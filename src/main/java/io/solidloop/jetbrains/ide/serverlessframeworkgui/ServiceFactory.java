@@ -3,7 +3,6 @@ package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.openapi.vfs.VirtualFile;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -25,7 +24,7 @@ public class ServiceFactory {
     private Project project;
 
     public Service create(VirtualFile serverlessYaml) {
-        Service service = new Service();
+        Service service = new Service(project);
 
         JsonNode jsonNode = null;
         try {
@@ -34,11 +33,10 @@ public class ServiceFactory {
         }
 
         service.setFile(serverlessYaml);
-        service.setName(VfsUtilCore.getRelativePath(serverlessYaml, project.getBaseDir()));
 
         if (jsonNode != null) {
             if (jsonNode.has(SERVICE)) {
-                service.setName(getName(jsonNode, service.getName()));
+                service.setName(jsonNode.get(SERVICE).textValue());
             }
 
             service.setFunctions(getFunctions(jsonNode));
@@ -56,11 +54,9 @@ public class ServiceFactory {
             }
         }
 
-        return service;
-    }
+        service.updateFullName();
 
-    private String getName(JsonNode jsonNode, String filePath) {
-        return jsonNode.get(SERVICE).textValue() + " (" + filePath + ")";
+        return service;
     }
 
     private Set<String> getFunctions(JsonNode jsonNode) {

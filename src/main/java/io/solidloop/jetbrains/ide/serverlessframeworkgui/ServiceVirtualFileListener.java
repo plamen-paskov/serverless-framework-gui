@@ -6,12 +6,13 @@ import com.intellij.util.ui.tree.TreeUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
 public class ServiceVirtualFileListener implements VirtualFileListener {
@@ -39,6 +40,27 @@ public class ServiceVirtualFileListener implements VirtualFileListener {
         }
     }
 
+    private DefaultMutableTreeNode findServiceNode(VirtualFile file) {
+        return (DefaultMutableTreeNode)TreeUtil.findNodeWithObject(file, tree.getModel(), getRootNode());
+    }
+
+    @Nullable
+    private Service findService(VirtualFile file) {
+        DefaultMutableTreeNode serviceNode = findServiceNode(file);
+        if (serviceNode != null && serviceNode.getUserObject() instanceof Service) {
+            return (Service) serviceNode.getUserObject();
+        }
+        return null;
+    }
+
+    @Override
+    public void fileMoved(@NotNull VirtualFileMoveEvent event) {
+        Service service = findService(event.getFile());
+        if (service != null) {
+            service.updateFullName();
+        }
+    }
+
     @Override
     public void contentsChanged(@NotNull final VirtualFileEvent event) {
         onFileChange(event.getFile());
@@ -50,29 +72,25 @@ public class ServiceVirtualFileListener implements VirtualFileListener {
     }
 
     private void removeServiceNode(VirtualFile file) {
-        DefaultMutableTreeNode oldServiceNode = (DefaultMutableTreeNode)TreeUtil.findNodeWithObject(file, tree.getModel(), getRootNode());
+        DefaultMutableTreeNode serviceNode = findServiceNode(file);
 
-        if (oldServiceNode != null) {
-            oldServiceNode.removeFromParent();
+        if (serviceNode != null) {
+            serviceNode.removeFromParent();
             tree.updateUI();
         }
     }
 
     private void onDirectoryDelete(VirtualFile directory) {
-        List<TreePath> treePaths = TreeUtil.treePathTraverser(tree).filter(treePath -> {
+        Set<TreePath> treePaths = TreeUtil.treePathTraverser(tree).filter(treePath -> {
             Object userObject = ((DefaultMutableTreeNode) treePath.getLastPathComponent()).getUserObject();
             if (userObject instanceof Service) {
                 return VfsUtilCore.isAncestor(directory, ((Service) userObject).getFile(), false);
             }
             return false;
-        }).toList();
+        }).toSet();
 
         if (treePaths.size() > 0) {
-            for (TreePath treePath : treePaths) {
-                DefaultMutableTreeNode lastPathComponent = (DefaultMutableTreeNode) treePath.getLastPathComponent();
-                lastPathComponent.removeFromParent();
-            }
-
+            treePaths.forEach(treePath -> ((DefaultMutableTreeNode) treePath.getLastPathComponent()).removeFromParent());
             tree.updateUI();
         }
     }
@@ -87,17 +105,6 @@ public class ServiceVirtualFileListener implements VirtualFileListener {
             removeServiceNode(file);
         }
     }
-
-//    private Collection<Service> getTreeServices() {
-//        List<Service> items = new ArrayList<>();
-//
-//        TreeUtil
-//                .treePathTraverser(tree)
-//                .filter(treePath -> ((DefaultMutableTreeNode) treePath.getLastPathComponent()).getUserObject() instanceof Service)
-//                .forEach(treePath -> items.add((Service) treePath.getLastPathComponent()));
-//
-//        return items;
-//    }
 
     private void onFileChange(@NotNull final VirtualFile file) {
         if (ServerlessFileUtil.isServerlessFile(file)) {
