@@ -8,6 +8,7 @@ import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.yaml.YAMLFileType;
 
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -15,10 +16,8 @@ import java.util.Set;
 public class ServiceRepository {
     private ServiceFactory serviceFactory;
 
-    public Set<Service> getAll() {
-        Set<Service> services = new HashSet<>();
-
-        FileTypeIndex.getFiles(YAMLFileType.YML, new GlobalSearchScope() {
+    private Collection<VirtualFile> findServerlessYamlFiles() {
+        return FileTypeIndex.getFiles(YAMLFileType.YML, new GlobalSearchScope() {
             @Override
             public int compare(@NotNull final VirtualFile file1, @NotNull final VirtualFile file2) {
                 return 0;
@@ -36,19 +35,14 @@ public class ServiceRepository {
 
             @Override
             public boolean contains(@NotNull final VirtualFile file) {
-                if (file.getExtension() != null) {
-                    return file.getName().substring(0, file.getName().length() - file.getExtension().length() - 1).equals("serverless");
-                }
-
-                return false;
-            }
-        }).forEach(file -> {
-            try {
-                services.add(serviceFactory.create(file));
-            } catch (ServiceException e) {
+                return file.getNameWithoutExtension().equals("serverless");
             }
         });
+    }
 
+    public Set<Service> getAll() {
+        Set<Service> services = new HashSet<>();
+        findServerlessYamlFiles().forEach(file -> services.add(serviceFactory.create(file)));
         return services;
     }
 }

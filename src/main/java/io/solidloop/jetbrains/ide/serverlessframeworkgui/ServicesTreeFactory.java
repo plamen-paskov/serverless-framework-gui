@@ -18,6 +18,7 @@ import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -39,17 +40,29 @@ public class ServicesTreeFactory {
 
     private Tree tree;
 
+    private class TreeCellRenderer extends DefaultTreeCellRenderer {
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+
+            if (value instanceof DefaultMutableTreeNode) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+                if (node.getUserObject() instanceof Service) {
+                    setIcon(AllIcons.FileTypes.Diagram);
+                } else if (node.getUserObject() instanceof Function) {
+                    setIcon(AllIcons.Gutter.ImplementingFunctionalInterface);
+                }
+            }
+
+            return this;
+        }
+    }
+
     public Tree create(DefaultMutableTreeNode rootNode) {
         tree = new Tree(rootNode);
         tree.setRootVisible(false);
         tree.addMouseListener(createMouseListener());
-
-        DefaultTreeCellRenderer defaultTreeCellRenderer = new DefaultTreeCellRenderer();
-        defaultTreeCellRenderer.setOpenIcon(AllIcons.FileTypes.Diagram);
-        defaultTreeCellRenderer.setClosedIcon(AllIcons.FileTypes.Diagram);
-        defaultTreeCellRenderer.setLeafIcon(AllIcons.Gutter.ImplementingFunctionalInterface);
-        tree.setCellRenderer(defaultTreeCellRenderer);
-
+        tree.setCellRenderer(new TreeCellRenderer());
         TreeUtil.expandAll(tree);
 
         return tree;

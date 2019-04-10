@@ -40,8 +40,8 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         copyExecScriptToTmpIfNeeded(config);
 
         Topic<FunctionCommandOutputHandler> functionCommandResponseTopic = Topic.create("Function command response", FunctionCommandOutputHandler.class);
-        ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()));
-        ServiceRepository serviceRepository = new ServiceRepository(project, serviceFactory);
+        ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()), project);
+        ServiceRepository serviceRepository = new ServiceRepository(serviceFactory);
         ServiceNodeFactory serviceNodeFactory = new ServiceNodeFactory();
         ServicesTreeComparator servicesTreeComparator = new ServicesTreeComparator();
         ServicesTreeRootNodeFactory servicesTreeRootNodeFactory = new ServicesTreeRootNodeFactory(serviceNodeFactory, servicesTreeComparator);
@@ -53,7 +53,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(ToolWindowUtil.getStructureView(project), configuration);
         messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, configuration));
         messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, functionInvocationResponseFileEditorManagerListener);
-        VirtualFileManager.getInstance().addVirtualFileListener(new ServiceVirtualFileListener(servicesTree, serviceRepository, serviceFactory, serviceNodeFactory, servicesTreeComparator));
+        VirtualFileManager.getInstance().addVirtualFileListener(new ServiceVirtualFileListener(servicesTree, serviceFactory, serviceNodeFactory, servicesTreeComparator));
 
         return new JBScrollPane(servicesTree);
     }

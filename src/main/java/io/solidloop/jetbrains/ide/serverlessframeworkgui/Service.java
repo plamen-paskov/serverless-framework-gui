@@ -23,12 +23,22 @@ public class Service implements Comparable<Service> {
 
     @Override
     public boolean equals(Object obj) {
-        if (obj == null) return false;
-        if (!(obj instanceof Service))
+        if (obj == null) {
             return false;
-        if (obj == this)
+        }
+
+        if (!(obj instanceof Service) && !(obj instanceof VirtualFile)) {
+            return false;
+        }
+
+        if (obj == this) {
             return true;
-        return Objects.equals(file.getCanonicalPath(), ((Service) obj).getFile().getCanonicalPath());
+        }
+
+        String currentFilePath = file.getCanonicalPath();
+        String objectFilePath = obj instanceof Service ? ((Service) obj).getFile().getCanonicalPath() : ((VirtualFile) obj).getCanonicalPath();
+
+        return Objects.equals(currentFilePath, objectFilePath);
     }
 
     @Override
