@@ -40,7 +40,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         copyExecScriptToTmpIfNeeded(config);
 
         Topic<FunctionCommandOutputHandler> functionCommandResponseTopic = Topic.create("Function command response", FunctionCommandOutputHandler.class);
-        ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()), project);
+        ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()));
         ServiceRepository serviceRepository = new ServiceRepository(serviceFactory);
         ServiceNodeFactory serviceNodeFactory = new ServiceNodeFactory();
         ServicesTreeComparator servicesTreeComparator = new ServicesTreeComparator();

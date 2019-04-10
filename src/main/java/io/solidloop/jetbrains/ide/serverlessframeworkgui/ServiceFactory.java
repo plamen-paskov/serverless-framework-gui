@@ -2,13 +2,14 @@ package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -20,52 +21,69 @@ public class ServiceFactory {
     private static final String REGION = "region";
     @NonNull
     private ObjectMapper objectMapper;
-    @NonNull
-    private Project project;
 
-    public Service create(VirtualFile serverlessYaml) {
-        Service service = new Service(project);
+    private Map<VirtualFile, Service> cache = new HashMap<>();
 
-        JsonNode jsonNode = null;
-        try {
-            jsonNode = objectMapper.readTree(serverlessYaml.getInputStream());
-        } catch (IOException ignored) {
-        }
+    public Service create(VirtualFile file) {
+        JsonNode jsonNode = parseServerlessYaml(file);
+        Service service = getOrCreateService(file);
 
-        service.setFile(serverlessYaml);
+        String name = null;
+        String stage = null;
+        String region = null;
+        Set<String> functions = null;
 
         if (jsonNode != null) {
             if (jsonNode.has(SERVICE)) {
-                service.setName(jsonNode.get(SERVICE).textValue());
+                name = jsonNode.get(SERVICE).textValue();
             }
-
-            service.setFunctions(getFunctions(jsonNode));
 
             if (jsonNode.has(PROVIDER)) {
                 JsonNode provider = jsonNode.get(PROVIDER);
 
                 if (provider.has(STAGE)) {
-                    service.setStage(provider.get(STAGE).textValue());
+                    stage = provider.get(STAGE).textValue();
                 }
 
                 if (provider.has(REGION)) {
-                    service.setRegion(provider.get(REGION).textValue());
+                    region = provider.get(REGION).textValue();
                 }
+            }
+
+            if (jsonNode.has(FUNCTIONS)) {
+                functions = getFunctions(jsonNode);
             }
         }
 
-        service.updateFullName();
+        service.setFile(file);
+        service.setName(name);
+        service.setStage(stage);
+        service.setRegion(region);
+        service.setFunctions(functions);
 
         return service;
     }
 
+    private Service getOrCreateService(VirtualFile file) {
+        Service service = cache.get(file);
+        if (service == null) {
+            service = new Service();
+            cache.put(file, service);
+        }
+        return service;
+    }
+
+    private JsonNode parseServerlessYaml(VirtualFile file) {
+        try {
+            return objectMapper.readTree(file.getInputStream());
+        } catch (IOException ignored) {
+            return null;
+        }
+    }
+
     private Set<String> getFunctions(JsonNode jsonNode) {
         Set<String> functions = new HashSet<>();
-
-        if (jsonNode.has(FUNCTIONS)) {
-            jsonNode.get(FUNCTIONS).fields().forEachRemaining(function -> functions.add(function.getKey()));
-        }
-
+        jsonNode.get(FUNCTIONS).fields().forEachRemaining(function -> functions.add(function.getKey()));
         return functions;
     }
 }

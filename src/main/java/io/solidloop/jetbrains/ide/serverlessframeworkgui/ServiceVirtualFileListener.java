@@ -6,12 +6,10 @@ import com.intellij.util.ui.tree.TreeUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
-import java.util.ArrayList;
 import java.util.Set;
 
 @RequiredArgsConstructor
@@ -41,24 +39,7 @@ public class ServiceVirtualFileListener implements VirtualFileListener {
     }
 
     private DefaultMutableTreeNode findServiceNode(VirtualFile file) {
-        return (DefaultMutableTreeNode)TreeUtil.findNodeWithObject(file, tree.getModel(), getRootNode());
-    }
-
-    @Nullable
-    private Service findService(VirtualFile file) {
-        DefaultMutableTreeNode serviceNode = findServiceNode(file);
-        if (serviceNode != null && serviceNode.getUserObject() instanceof Service) {
-            return (Service) serviceNode.getUserObject();
-        }
-        return null;
-    }
-
-    @Override
-    public void fileMoved(@NotNull VirtualFileMoveEvent event) {
-        Service service = findService(event.getFile());
-        if (service != null) {
-            service.updateFullName();
-        }
+        return (DefaultMutableTreeNode) TreeUtil.findNodeWithObject(file, tree.getModel(), getRootNode());
     }
 
     @Override
@@ -109,22 +90,10 @@ public class ServiceVirtualFileListener implements VirtualFileListener {
     private void onFileChange(@NotNull final VirtualFile file) {
         if (ServerlessFileUtil.isServerlessFile(file)) {
             Service newService = serviceFactory.create(file);
-            DefaultMutableTreeNode newServiceNode = serviceNodeFactory.create(newService);
-            DefaultMutableTreeNode oldServiceNode = TreeUtil.findNodeWithObject(getRootNode(), newService);
-
-            boolean isOldServiceNodeExpanded = false;
-            if (oldServiceNode != null) {
-                isOldServiceNodeExpanded = tree.isExpanded(new TreePath(oldServiceNode.getPath()));
-                oldServiceNode.removeFromParent();
-            }
-
-            TreeUtil.insertNode(newServiceNode, getRootNode(), (DefaultTreeModel) tree.getModel(), true, comparator);
-
-            if (isOldServiceNodeExpanded) {
-                ArrayList<TreePath> treePaths = new ArrayList<>();
-                treePaths.add(new TreePath(newServiceNode.getPath()));
-
-                TreeUtil.restoreExpandedPaths(tree, treePaths);
+            DefaultMutableTreeNode newServiceNode = serviceNodeFactory.createOrUpdate(newService);
+            DefaultMutableTreeNode oldServiceNode = findServiceNode(file);
+            if (oldServiceNode == null) {
+                TreeUtil.insertNode(newServiceNode, getRootNode(), (DefaultTreeModel) tree.getModel(), true, comparator);
             }
 
             tree.updateUI();

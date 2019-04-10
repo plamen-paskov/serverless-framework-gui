@@ -8,6 +8,7 @@ import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
+import com.intellij.openapi.vfs.VfsUtilCore;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.messages.Topic;
 import com.intellij.util.ui.tree.TreeUtil;
@@ -40,22 +41,41 @@ public class ServicesTreeFactory {
 
     private Tree tree;
 
-    private class TreeCellRenderer extends DefaultTreeCellRenderer {
-        @Override
-        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
-            super.getTreeCellRendererComponent(tree, value, sel, expanded, leaf, row, hasFocus);
+    private String createNodeDisplayName(Object nodeObject) {
+        if (nodeObject instanceof DefaultMutableTreeNode) {
+            Object userObject = ((DefaultMutableTreeNode) nodeObject).getUserObject();
 
-            if (value instanceof DefaultMutableTreeNode) {
-                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
-                if (node.getUserObject() instanceof Service) {
-                    setIcon(AllIcons.FileTypes.Diagram);
-                } else if (node.getUserObject() instanceof Function) {
-                    setIcon(AllIcons.Gutter.ImplementingFunctionalInterface);
-                }
+            if (userObject instanceof Service) {
+                return createNodeDisplayName((Service) userObject);
+            } else if (userObject instanceof Function) {
+                return createNodeDisplayName((Function) userObject);
             }
-
-            return this;
         }
+
+        return nodeObject.toString();
+    }
+
+    private String createNodeDisplayName(Function function) {
+        return function.getName();
+    }
+
+    private String createNodeDisplayName(Service service) {
+        StringBuilder name = new StringBuilder();
+        name.append("<html>");
+
+        if (service.getName() != null) {
+            name.append("<b>");
+            name.append(service.getName());
+            name.append("</b>");
+            name.append("&nbsp;&nbsp;");
+        }
+
+        name.append("<font color=\"gray\">");
+        name.append(VfsUtilCore.getRelativePath(service.getFile(), project.getBaseDir()));
+        name.append("</font>");
+        name.append("</html>");
+
+        return name.toString();
     }
 
     public Tree create(DefaultMutableTreeNode rootNode) {
@@ -199,6 +219,24 @@ public class ServicesTreeFactory {
                     .setFadeoutTime(10000)
                     .createBalloon()
                     .showInCenterOf(tree);
+        }
+    }
+
+    private class TreeCellRenderer extends DefaultTreeCellRenderer {
+        @Override
+        public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean expanded, boolean leaf, int row, boolean hasFocus) {
+            super.getTreeCellRendererComponent(tree, createNodeDisplayName(value), sel, expanded, leaf, row, hasFocus);
+
+            if (value instanceof DefaultMutableTreeNode) {
+                DefaultMutableTreeNode node = (DefaultMutableTreeNode) value;
+                if (node.getUserObject() instanceof Service) {
+                    setIcon(AllIcons.FileTypes.Diagram);
+                } else if (node.getUserObject() instanceof Function) {
+                    setIcon(AllIcons.Gutter.ImplementingFunctionalInterface);
+                }
+            }
+
+            return this;
         }
     }
 }

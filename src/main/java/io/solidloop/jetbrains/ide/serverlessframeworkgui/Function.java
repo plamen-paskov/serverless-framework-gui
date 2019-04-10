@@ -8,9 +8,4 @@ import lombok.Data;
 public class Function {
     private Service service;
     private String name;
-
-    @Override
-    public String toString() {
-        return name;
-    }
 }
