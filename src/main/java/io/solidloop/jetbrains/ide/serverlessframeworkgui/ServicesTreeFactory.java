@@ -8,12 +8,13 @@ import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
 import com.intellij.openapi.ui.MessageType;
 import com.intellij.openapi.ui.popup.JBPopupFactory;
-import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.messages.Topic;
 import com.intellij.util.ui.tree.TreeUtil;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.SystemIndependent;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -40,43 +41,6 @@ public class ServicesTreeFactory {
     private Topic<FunctionCommandOutputHandler> topic;
 
     private Tree tree;
-
-    private String createNodeDisplayName(Object nodeObject) {
-        if (nodeObject instanceof DefaultMutableTreeNode) {
-            Object userObject = ((DefaultMutableTreeNode) nodeObject).getUserObject();
-
-            if (userObject instanceof Service) {
-                return createNodeDisplayName((Service) userObject);
-            } else if (userObject instanceof Function) {
-                return createNodeDisplayName((Function) userObject);
-            }
-        }
-
-        return nodeObject.toString();
-    }
-
-    private String createNodeDisplayName(Function function) {
-        return function.getName();
-    }
-
-    private String createNodeDisplayName(Service service) {
-        StringBuilder name = new StringBuilder();
-        name.append("<html>");
-
-        if (service.getName() != null) {
-            name.append("<b>");
-            name.append(service.getName());
-            name.append("</b>");
-            name.append("&nbsp;&nbsp;");
-        }
-
-        name.append("<font color=\"gray\">");
-        name.append(VfsUtilCore.getRelativePath(service.getFile(), project.getBaseDir()));
-        name.append("</font>");
-        name.append("</html>");
-
-        return name.toString();
-    }
 
     public Tree create(DefaultMutableTreeNode rootNode) {
         tree = new Tree(rootNode);
@@ -237,6 +201,53 @@ public class ServicesTreeFactory {
             }
 
             return this;
+        }
+
+        private String createNodeDisplayName(Object nodeObject) {
+            if (nodeObject instanceof DefaultMutableTreeNode) {
+                Object userObject = ((DefaultMutableTreeNode) nodeObject).getUserObject();
+
+                if (userObject instanceof Service) {
+                    return createNodeDisplayName((Service) userObject);
+                } else if (userObject instanceof Function) {
+                    return createNodeDisplayName((Function) userObject);
+                }
+            }
+
+            return nodeObject.toString();
+        }
+
+        private String createNodeDisplayName(Function function) {
+            return function.getName();
+        }
+
+        private String createNodeDisplayName(Service service) {
+            StringBuilder name = new StringBuilder();
+            name.append("<html>");
+
+            if (service.getName() != null) {
+                name.append("<b>");
+                name.append(service.getName());
+                name.append("</b>");
+                name.append("&nbsp;&nbsp;");
+            }
+
+            name.append("<font color=\"gray\">");
+            name.append(getRelativePath(service.getFile()));
+            name.append("</font>");
+            name.append("</html>");
+
+            return name.toString();
+        }
+
+        private String getRelativePath(VirtualFile file) {
+            String canonicalPath = file.getCanonicalPath();
+            @SystemIndependent String projectBasePath = project.getBasePath();
+            if (canonicalPath != null && projectBasePath != null && canonicalPath.startsWith(projectBasePath)) {
+                return canonicalPath.replace(projectBasePath + "/", "");
+            }
+
+            return canonicalPath;
         }
     }
 }

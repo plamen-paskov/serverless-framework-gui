@@ -20,7 +20,7 @@
 
     <depends>com.intellij.modules.lang</depends>
     <depends>org.jetbrains.plugins.yaml</depends>
-    <idea-version since-build="173" until-build="191.*"/>
+    <idea-version since-build="173.3415.22" until-build="191.*"/>
 
     <change-notes><![CDATA[
     <ul>

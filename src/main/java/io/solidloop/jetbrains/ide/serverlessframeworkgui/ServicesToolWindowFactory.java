@@ -41,7 +41,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
 
         Topic<FunctionCommandOutputHandler> functionCommandResponseTopic = Topic.create("Function command response", FunctionCommandOutputHandler.class);
         ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()));
-        ServiceRepository serviceRepository = new ServiceRepository(serviceFactory);
+        ServiceRepository serviceRepository = new ServiceRepository(serviceFactory, project);
         ServiceNodeFactory serviceNodeFactory = new ServiceNodeFactory();
         ServicesTreeComparator servicesTreeComparator = new ServicesTreeComparator();
         ServicesTreeRootNodeFactory servicesTreeRootNodeFactory = new ServicesTreeRootNodeFactory(serviceNodeFactory, servicesTreeComparator);
@@ -53,7 +53,7 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(ToolWindowUtil.getStructureView(project), configuration);
         messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, configuration));
         messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, functionInvocationResponseFileEditorManagerListener);
-        VirtualFileManager.getInstance().addVirtualFileListener(new ServiceVirtualFileListener(servicesTree, serviceFactory, serviceNodeFactory, servicesTreeComparator));
+        VirtualFileManager.getInstance().addVirtualFileListener(new ServerlessVirtualFileListener(servicesTree, serviceFactory, serviceNodeFactory, servicesTreeComparator, project));
 
         return new JBScrollPane(servicesTree);
     }

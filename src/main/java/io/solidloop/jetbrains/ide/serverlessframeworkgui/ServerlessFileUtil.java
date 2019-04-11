@@ -14,7 +14,7 @@ public class ServerlessFileUtil {
     }
 
     public static boolean isServerlessFile(VirtualFile file) {
-        return isServerlessFile(file.getName());
+        return !file.isDirectory() && isServerlessFile(file.getName());
     }
 
     public static boolean isServerlessFile(String fileName) {
