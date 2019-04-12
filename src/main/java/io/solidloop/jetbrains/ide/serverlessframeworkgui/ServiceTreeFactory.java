@@ -3,6 +3,7 @@ package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 import com.intellij.execution.ExecutionException;
 import com.intellij.execution.OutputListener;
 import com.intellij.icons.AllIcons;
+import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
@@ -21,6 +22,7 @@ import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.TreePath;
 import java.awt.*;
+import java.awt.event.ActionEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.io.File;
@@ -97,6 +99,15 @@ public class ServiceTreeFactory {
         JBPopupMenu popup = new JBPopupMenu();
 
         String directory = service.getFile().getParent().getCanonicalPath();
+
+        JBMenuItem openFile = new JBMenuItem("Open file");
+        openFile.addActionListener(new AbstractAction() {
+            @Override
+            public void actionPerformed(ActionEvent actionEvent) {
+                FileEditorManager.getInstance(project).openFile(service.getFile(), true);
+            }
+        });
+        popup.add(openFile);
 
         JBMenuItem deployMenuItem = new JBMenuItem("Deploy");
         deployMenuItem.addActionListener(actionEvent -> execute("Deploy " + service.getName(), directory, createDeployServiceCommand()));
