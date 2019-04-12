@@ -100,14 +100,14 @@ public class ServiceTreeFactory {
 
         String directory = service.getFile().getParent().getCanonicalPath();
 
-        JBMenuItem openFile = new JBMenuItem("Open file");
-        openFile.addActionListener(new AbstractAction() {
+        JBMenuItem openFileMenuItem = new JBMenuItem("Open file");
+        openFileMenuItem.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
                 FileEditorManager.getInstance(project).openFile(service.getFile(), true);
             }
         });
-        popup.add(openFile);
+        popup.add(openFileMenuItem);
 
         JBMenuItem deployMenuItem = new JBMenuItem("Deploy");
         deployMenuItem.addActionListener(actionEvent -> execute("Deploy " + service.getName(), directory, createDeployServiceCommand()));
