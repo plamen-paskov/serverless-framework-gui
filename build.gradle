@@ -22,10 +22,10 @@ dependencies {
 }
 
 intellij {
-    version '2017.3'
+    version '173.3415.22'
 
     patchPluginXml {
-        sinceBuild '173.0'
+        sinceBuild '173.3415.22'
         untilBuild '191.*'
     }
 
