@@ -44,6 +44,11 @@ public class ServerlessVirtualFileListener extends AbstractServerlessVirtualFile
         }
     }
 
+    @Override
+    void onMoveInAnotherDirectory(VirtualFile file) {
+        tree.updateUI();
+    }
+
     private DefaultMutableTreeNode findTreeNode(Object object) {
         return (DefaultMutableTreeNode) TreeUtil.findNodeWithObject(object, tree.getModel(), getRootNode());
     }

@@ -24,6 +24,8 @@ public abstract class AbstractServerlessVirtualFileListener implements VirtualFi
 
     abstract void onDelete(VirtualFile file);
 
+    abstract void onMoveInAnotherDirectory(VirtualFile file);
+
 
     @Override
     public void propertyChanged(@NotNull VirtualFilePropertyEvent event) {
@@ -97,6 +99,8 @@ public abstract class AbstractServerlessVirtualFileListener implements VirtualFi
             } else {
                 onCreateOrUpdate(serviceFactory.create(file));
             }
+        } else {
+            onMoveInAnotherDirectory(file);
         }
     }
 

@@ -60,7 +60,7 @@ public class ServiceTreeFactory {
         return rootNode;
     }
 
-    // @// TODO: 12.04.19 inject mouse listener 
+    // @// TODO: 12.04.19 inject mouse listener
     private MouseAdapter createMouseListener() {
         return new MouseAdapter() {
             @Override
