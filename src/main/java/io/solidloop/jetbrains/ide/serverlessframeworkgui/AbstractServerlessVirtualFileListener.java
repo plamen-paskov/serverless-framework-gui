@@ -129,6 +129,9 @@ public abstract class AbstractServerlessVirtualFileListener implements VirtualFi
     }
 
     private boolean inProject(VirtualFile file) {
+        if (project.isDisposed()) {
+            return false;
+        }
         return getProjectFileIndex().isInContent(file);
     }
 }
