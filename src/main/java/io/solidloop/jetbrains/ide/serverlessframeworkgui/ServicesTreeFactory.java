@@ -221,6 +221,7 @@ public class ServicesTreeFactory {
             return function.getName();
         }
 
+        // @// TODO: 12.04.19 optimize getting relative path
         private String createNodeDisplayName(Service service) {
             StringBuilder name = new StringBuilder();
             name.append("<html>");
