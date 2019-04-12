@@ -26,11 +26,14 @@ import java.awt.event.MouseEvent;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 @RequiredArgsConstructor
-public class ServicesTreeFactory {
+public class ServiceTreeFactory {
     private static final String SERVERLESS_EXECUTABLE = "serverless";
 
+    @NonNull
+    private ServiceNodeFactory serviceNodeFactory;
     @NonNull
     private CommandExecutor commandExecutor;
     @NonNull
@@ -42,14 +45,19 @@ public class ServicesTreeFactory {
 
     private Tree tree;
 
-    public Tree create(DefaultMutableTreeNode rootNode) {
-        tree = new Tree(rootNode);
+    public Tree create(Set<Service> services) {
+        tree = new Tree(createRootNode(services));
         tree.setRootVisible(false);
         tree.addMouseListener(createMouseListener());
         tree.setCellRenderer(new TreeCellRenderer());
         TreeUtil.expandAll(tree);
-
         return tree;
+    }
+
+    private DefaultMutableTreeNode createRootNode(Set<Service> services) {
+        DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
+        services.forEach(service -> rootNode.add(serviceNodeFactory.createOrUpdate(service)));
+        return rootNode;
     }
 
     private MouseAdapter createMouseListener() {

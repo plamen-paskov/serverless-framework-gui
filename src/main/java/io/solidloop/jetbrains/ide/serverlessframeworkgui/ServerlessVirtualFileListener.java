@@ -7,13 +7,14 @@ import com.intellij.util.ui.tree.TreeUtil;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
+import java.util.Comparator;
 
 public class ServerlessVirtualFileListener extends AbstractServerlessVirtualFileListener {
     private Tree tree;
     private ServiceNodeFactory serviceNodeFactory;
-    private ServicesTreeComparator comparator;
+    private Comparator<Object> comparator;
 
-    public ServerlessVirtualFileListener(Tree tree, ServiceFactory serviceFactory, ServiceNodeFactory serviceNodeFactory, ServicesTreeComparator comparator, Project project) {
+    public ServerlessVirtualFileListener(Tree tree, ServiceFactory serviceFactory, ServiceNodeFactory serviceNodeFactory, Comparator<Object> comparator, Project project) {
         super(project, serviceFactory);
 
         this.tree = tree;
@@ -23,6 +24,7 @@ public class ServerlessVirtualFileListener extends AbstractServerlessVirtualFile
 
     @Override
     void onCreateOrUpdate(Service service) {
+        // @// TODO: 12.04.19 handle create and update separately
         DefaultMutableTreeNode newServiceNode = serviceNodeFactory.createOrUpdate(service);
 
         if (findTreeNode(service) == null) {

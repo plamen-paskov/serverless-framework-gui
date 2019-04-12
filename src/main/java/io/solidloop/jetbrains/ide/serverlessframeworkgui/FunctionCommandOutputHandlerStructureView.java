@@ -13,6 +13,7 @@ public class FunctionCommandOutputHandlerStructureView implements FunctionComman
     private FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener;
     private Project project;
     private Configuration configuration;
+    private ToolWindow structureView;
 
     @Override
     public void receive(final Output output, final Function function) {
@@ -24,8 +25,6 @@ public class FunctionCommandOutputHandlerStructureView implements FunctionComman
 
                 if (configuration.isOpenFunctionInvocationResponseAsFile()) {
                     FileEditorManager.getInstance(project).openFile(file, true);
-
-                    ToolWindow structureView = ToolWindowUtil.getStructureView(project);
 
                     if (configuration.isOpenStructureView() && !structureView.isVisible()) {
                         structureView.show(null);

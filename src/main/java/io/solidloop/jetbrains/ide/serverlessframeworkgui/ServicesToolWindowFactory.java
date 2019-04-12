@@ -3,12 +3,14 @@ package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.common.collect.Ordering;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
@@ -18,7 +20,6 @@ import com.intellij.util.messages.Topic;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
@@ -43,17 +44,15 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()));
         ServiceRepository serviceRepository = new ServiceRepository(serviceFactory, project);
         ServiceNodeFactory serviceNodeFactory = new ServiceNodeFactory();
-        ServicesTreeComparator servicesTreeComparator = new ServicesTreeComparator();
-        ServicesTreeRootNodeFactory servicesTreeRootNodeFactory = new ServicesTreeRootNodeFactory(serviceNodeFactory, servicesTreeComparator);
-        DefaultMutableTreeNode rootNode = servicesTreeRootNodeFactory.create(serviceRepository.getAll());
-        Tree servicesTree = new ServicesTreeFactory(new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), project, functionCommandResponseTopic).create(rootNode);
+        Tree servicesTree = new ServiceTreeFactory(serviceNodeFactory, new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), project, functionCommandResponseTopic).create(serviceRepository.getAll());
 
         Configuration configuration = Configuration.getInstance();
         MessageBusConnection messageBusConnection = project.getMessageBus().connect();
-        FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(ToolWindowUtil.getStructureView(project), configuration);
-        messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, configuration));
+        ToolWindow structureView = ToolWindowManager.getInstance(project).getToolWindow("Structure");
+        FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(structureView, configuration);
+        messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, configuration, structureView));
         messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, functionInvocationResponseFileEditorManagerListener);
-        VirtualFileManager.getInstance().addVirtualFileListener(new ServerlessVirtualFileListener(servicesTree, serviceFactory, serviceNodeFactory, servicesTreeComparator, project));
+        VirtualFileManager.getInstance().addVirtualFileListener(new ServerlessVirtualFileListener(servicesTree, serviceFactory, serviceNodeFactory, Ordering.allEqual(), project));
 
         return new JBScrollPane(servicesTree);
     }
