@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Set;
 
@@ -82,7 +82,7 @@ public class ServiceFactory {
     }
 
     private Set<String> getFunctions(JsonNode jsonNode) {
-        Set<String> functions = new HashSet<>();
+        Set<String> functions = new LinkedHashSet<>();
         jsonNode.get(FUNCTIONS).fields().forEachRemaining(function -> functions.add(function.getKey()));
         return functions;
     }
