@@ -17,6 +17,11 @@ public class Service implements Comparable<Service> {
     private Set<String> functions;
 
     @Override
+    public String toString() {
+        return name;
+    }
+
+    @Override
     public boolean equals(Object otherObject) {
         if (!(otherObject instanceof Service) && !(otherObject instanceof VirtualFile)) {
             return false;
