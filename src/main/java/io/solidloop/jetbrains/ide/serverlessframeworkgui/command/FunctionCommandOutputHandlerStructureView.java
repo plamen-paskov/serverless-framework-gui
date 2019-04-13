@@ -1,4 +1,4 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.command;
 
 import com.intellij.execution.Output;
 import com.intellij.openapi.application.ApplicationManager;
@@ -6,6 +6,9 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.testFramework.LightVirtualFile;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.Configuration;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.FunctionInvocationResponseFileEditorManagerListener;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

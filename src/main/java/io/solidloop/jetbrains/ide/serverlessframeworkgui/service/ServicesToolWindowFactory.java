@@ -1,4 +1,4 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
@@ -17,6 +17,11 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.messages.Topic;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.Config;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.Configuration;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.TreeContextMenuFactory;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.FunctionInvocationResponseFileEditorManagerListener;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.*;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
@@ -41,10 +46,12 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         copyExecScriptToTmpIfNeeded(config);
 
         Topic<FunctionCommandOutputHandler> functionCommandResponseTopic = Topic.create("Function command response", FunctionCommandOutputHandler.class);
+        DefaultCommandFactory commandFactory = new DefaultCommandFactory(project, new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()));
         ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()));
         ServiceRepository serviceRepository = new ServiceRepository(serviceFactory, project);
         ServiceNodeFactory serviceNodeFactory = new ServiceNodeFactory();
-        Tree servicesTree = new ServiceTreeFactory(serviceNodeFactory, new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), project, functionCommandResponseTopic).create(serviceRepository.getAll());
+
+        Tree tree = createTree(project, serviceNodeFactory, commandFactory, serviceRepository);
 
         Configuration configuration = Configuration.getInstance();
         MessageBusConnection messageBusConnection = project.getMessageBus().connect();
@@ -52,9 +59,14 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(structureView, configuration);
         messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, configuration, structureView));
         messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, functionInvocationResponseFileEditorManagerListener);
-        VirtualFileManager.getInstance().addVirtualFileListener(new ServerlessVirtualFileListener(servicesTree, serviceFactory, serviceNodeFactory, Ordering.allEqual(), project));
+        VirtualFileManager.getInstance().addVirtualFileListener(new ServerlessVirtualFileListener(tree, serviceFactory, serviceNodeFactory, Ordering.allEqual(), project));
 
-        return new JBScrollPane(servicesTree);
+        return new JBScrollPane(tree);
+    }
+
+    private Tree createTree(Project project, ServiceNodeFactory serviceNodeFactory, CommandFactory commandFactory, ServiceRepository serviceRepository) {
+        ServiceTreeFactory serviceTreeFactory = new ServiceTreeFactory(project, serviceNodeFactory, commandFactory, new TreeContextMenuFactory(project, commandFactory));
+        return serviceTreeFactory.create(serviceRepository.getAll());
     }
 
     private void copyExecScriptToTmpIfNeeded(Config config) throws IOException {

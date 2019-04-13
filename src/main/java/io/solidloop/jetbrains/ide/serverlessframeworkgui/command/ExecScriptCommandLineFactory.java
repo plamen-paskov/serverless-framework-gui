@@ -1,7 +1,8 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.command;
 
 import com.intellij.execution.configurations.GeneralCommandLine;
 import com.intellij.execution.configurations.PtyCommandLine;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.CommandLineFactory;
 import lombok.AllArgsConstructor;
 
 import java.nio.charset.Charset;

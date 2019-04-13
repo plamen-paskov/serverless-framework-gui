@@ -1,4 +1,6 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.service;
+
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import java.util.HashMap;

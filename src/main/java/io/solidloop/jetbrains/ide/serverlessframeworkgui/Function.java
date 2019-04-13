@@ -1,5 +1,6 @@
 package io.solidloop.jetbrains.ide.serverlessframeworkgui;
 
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.service.Service;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 
