@@ -36,6 +36,7 @@ public class ServiceTreeFactory {
 
     public Tree create(Set<Service> services) {
         Tree tree = new Tree(createRootNode(services));
+        tree.setCursor(Cursor.getDefaultCursor());
         tree.setRootVisible(false);
         tree.addMouseListener(createMouseListener());
         tree.setCellRenderer(new TreeCellRenderer());
