@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class FormChangeListener {
+public class FormModificationHandler {
     private Set<JComponent> components = new HashSet<>();
     private Map<JComponent, Object> defaultValues = new HashMap<>();
 

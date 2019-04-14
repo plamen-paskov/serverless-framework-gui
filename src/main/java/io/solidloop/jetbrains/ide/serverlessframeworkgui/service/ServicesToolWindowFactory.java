@@ -18,7 +18,7 @@ import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.messages.Topic;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.Config;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.Configuration;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettings;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.TreeContextMenuFactory;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.FunctionInvocationResponseFileEditorManagerListener;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.*;
@@ -53,11 +53,11 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
 
         Tree tree = createTree(project, serviceNodeFactory, commandFactory, serviceRepository);
 
-        Configuration configuration = Configuration.getInstance();
+        PluginSettings pluginSettings = PluginSettings.getInstance();
         MessageBusConnection messageBusConnection = project.getMessageBus().connect();
         ToolWindow structureView = ToolWindowManager.getInstance(project).getToolWindow("Structure");
-        FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(structureView, configuration);
-        messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, configuration, structureView));
+        FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(structureView, pluginSettings);
+        messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, pluginSettings, structureView));
         messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, functionInvocationResponseFileEditorManagerListener);
         VirtualFileManager.getInstance().addVirtualFileListener(new ServerlessVirtualFileListener(tree, serviceFactory, serviceNodeFactory, Ordering.allEqual(), project));
 

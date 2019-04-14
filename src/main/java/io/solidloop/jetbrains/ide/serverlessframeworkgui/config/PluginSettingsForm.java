@@ -7,9 +7,9 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class ConfigurationForm implements Configurable {
-    private Configuration configuration = Configuration.getInstance();
-    private FormChangeListener formChangeListener = new FormChangeListener();
+public class PluginSettingsForm implements Configurable {
+    private PluginSettings pluginSettings = PluginSettings.getInstance();
+    private FormModificationHandler formModificationHandler = new FormModificationHandler();
     private JPanel panel;
     private JBCheckBox openStructureView;
     private JBCheckBox closeStructureView;
@@ -29,16 +29,16 @@ public class ConfigurationForm implements Configurable {
             openStructureView = new JBCheckBox("Open Structure View when function invocation response file is opened");
             closeStructureView = new JBCheckBox("Close Structure View when all function invocation response files are closed");
 
-            openFunctionInvocationResponseAsFile.setSelected(configuration.isOpenFunctionInvocationResponseAsFile());
-            openStructureView.setSelected(configuration.isOpenStructureView());
-            closeStructureView.setSelected(configuration.isCloseStructureView());
+            openFunctionInvocationResponseAsFile.setSelected(pluginSettings.isOpenFunctionInvocationResponseAsFile());
+            openStructureView.setSelected(pluginSettings.isOpenStructureView());
+            closeStructureView.setSelected(pluginSettings.isCloseStructureView());
 
             toggle();
             openFunctionInvocationResponseAsFile.addActionListener(changeEvent -> toggle());
 
-            formChangeListener.add(openFunctionInvocationResponseAsFile);
-            formChangeListener.add(openStructureView);
-            formChangeListener.add(closeStructureView);
+            formModificationHandler.add(openFunctionInvocationResponseAsFile);
+            formModificationHandler.add(openStructureView);
+            formModificationHandler.add(closeStructureView);
 
             panel = new JPanel();
             BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
@@ -64,23 +64,23 @@ public class ConfigurationForm implements Configurable {
 
     @Override
     public boolean isModified() {
-        return formChangeListener.isModified();
+        return formModificationHandler.isModified();
     }
 
     @Override
     public void apply() {
-        configuration.setOpenFunctionInvocationResponseAsFile(openFunctionInvocationResponseAsFile.isSelected());
-        configuration.setOpenStructureView(openStructureView.isSelected());
-        configuration.setCloseStructureView(closeStructureView.isSelected());
+        pluginSettings.setOpenFunctionInvocationResponseAsFile(openFunctionInvocationResponseAsFile.isSelected());
+        pluginSettings.setOpenStructureView(openStructureView.isSelected());
+        pluginSettings.setCloseStructureView(closeStructureView.isSelected());
 
-        formChangeListener.add(openFunctionInvocationResponseAsFile);
-        formChangeListener.add(openStructureView);
-        formChangeListener.add(closeStructureView);
+        formModificationHandler.add(openFunctionInvocationResponseAsFile);
+        formModificationHandler.add(openStructureView);
+        formModificationHandler.add(closeStructureView);
     }
 
     @Override
     public void reset() {
-        formChangeListener.reset();
+        formModificationHandler.reset();
     }
 
     @Override
