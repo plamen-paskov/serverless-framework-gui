@@ -1,4 +1,4 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.function;
 
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
@@ -13,7 +13,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @RequiredArgsConstructor
-public class FunctionInvocationResponseFileEditorManagerListener implements FileEditorManagerListener {
+public class FunctionInvocationResponseFileCloseListener implements FileEditorManagerListener {
     @NonNull
     private ToolWindow structureView;
 

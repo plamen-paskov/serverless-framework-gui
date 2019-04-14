@@ -1,4 +1,4 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.function;
 
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.service.Service;
 import lombok.AllArgsConstructor;

@@ -5,9 +5,9 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.Command;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.CommandFactory;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.function.Function;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 

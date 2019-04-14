@@ -1,6 +1,6 @@
 package io.solidloop.jetbrains.ide.serverlessframeworkgui.command;
 
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.function.Function;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.service.Service;
 
 public interface CommandFactory {

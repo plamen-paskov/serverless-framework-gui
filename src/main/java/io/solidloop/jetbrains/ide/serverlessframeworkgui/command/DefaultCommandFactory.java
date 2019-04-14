@@ -3,7 +3,7 @@ package io.solidloop.jetbrains.ide.serverlessframeworkgui.command;
 import com.intellij.execution.OutputListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.Topic;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.function.Function;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.service.Service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;

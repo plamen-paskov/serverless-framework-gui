@@ -6,14 +6,14 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.testFramework.LightVirtualFile;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.FunctionInvocationResponseFileEditorManagerListener;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettings;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.function.Function;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.function.FunctionInvocationResponseFileCloseListener;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public class FunctionCommandOutputHandlerStructureView implements FunctionCommandOutputHandler {
-    private FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener;
+    private FunctionInvocationResponseFileCloseListener functionInvocationResponseFileCloseListener;
     private Project project;
     private PluginSettings pluginSettings;
     private ToolWindow structureView;
@@ -34,7 +34,7 @@ public class FunctionCommandOutputHandlerStructureView implements FunctionComman
                     }
 
                     if (pluginSettings.isCloseStructureView()) {
-                        functionInvocationResponseFileEditorManagerListener.addFile(file);
+                        functionInvocationResponseFileCloseListener.addFile(file);
                     }
                 }
             }

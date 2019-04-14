@@ -4,7 +4,7 @@ import com.intellij.execution.OutputListener;
 import com.intellij.execution.process.ProcessEvent;
 import com.intellij.util.messages.MessageBus;
 import com.intellij.util.messages.Topic;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.function.Function;
 import lombok.AllArgsConstructor;
 import org.jetbrains.annotations.NotNull;
 
