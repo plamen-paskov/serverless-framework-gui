@@ -5,7 +5,7 @@ import com.intellij.openapi.vfs.VirtualFile;
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServerlessFileUtil {
+public class FileUtil {
     private static final List<String> configFileNames = new ArrayList<>();
 
     static {

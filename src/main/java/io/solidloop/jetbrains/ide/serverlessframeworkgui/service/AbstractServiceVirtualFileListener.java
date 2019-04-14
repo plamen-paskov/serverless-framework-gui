@@ -1,12 +1,9 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.service;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
 import com.intellij.openapi.vfs.*;
 import com.intellij.psi.PsiManager;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.service.ServerlessFileUtil;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.service.Service;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.service.ServiceFactory;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 import org.jetbrains.annotations.NotNull;
@@ -15,7 +12,7 @@ import java.util.LinkedList;
 import java.util.Queue;
 
 @RequiredArgsConstructor
-public abstract class AbstractServerlessVirtualFileListener implements VirtualFileListener {
+public abstract class AbstractServiceVirtualFileListener implements VirtualFileListener {
     @NonNull
     protected Project project;
     @NonNull
@@ -68,7 +65,7 @@ public abstract class AbstractServerlessVirtualFileListener implements VirtualFi
             }
 
             getProjectFileIndex().iterateContentUnderDirectory(file, fileOrDir -> {
-                if (ServerlessFileUtil.isServerlessFile(fileOrDir)) {
+                if (FileUtil.isServerlessFile(fileOrDir)) {
                     beforeDeletionFiles.add(fileOrDir);
                 }
 
@@ -86,7 +83,7 @@ public abstract class AbstractServerlessVirtualFileListener implements VirtualFi
             while ((currentFile = beforeDeletionFiles.poll()) != null) {
                 onDelete(currentFile);
             }
-        } else if (ServerlessFileUtil.isServerlessFile(file)) {
+        } else if (FileUtil.isServerlessFile(file)) {
             onDelete(event.getFile());
         }
     }
@@ -116,15 +113,15 @@ public abstract class AbstractServerlessVirtualFileListener implements VirtualFi
 
     private boolean processEvent(@NotNull final VirtualFileEvent event) {
         VirtualFile file = event.getFile();
-        return ServerlessFileUtil.isServerlessFile(file) && inProject(file);
+        return FileUtil.isServerlessFile(file) && inProject(file);
     }
 
     private boolean isRenameFromServerlessToNonServerless(String oldName, String newName) {
-        return ServerlessFileUtil.isServerlessFile(oldName) && !ServerlessFileUtil.isServerlessFile(newName);
+        return FileUtil.isServerlessFile(oldName) && !FileUtil.isServerlessFile(newName);
     }
 
     private boolean isRenameFromNonServerlessToServerless(String oldName, String newName) {
-        return !ServerlessFileUtil.isServerlessFile(oldName) && ServerlessFileUtil.isServerlessFile(newName);
+        return !FileUtil.isServerlessFile(oldName) && FileUtil.isServerlessFile(newName);
     }
 
     private ProjectFileIndex getProjectFileIndex() {

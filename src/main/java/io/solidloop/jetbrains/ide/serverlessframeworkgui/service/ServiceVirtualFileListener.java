@@ -4,18 +4,17 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.AbstractServerlessVirtualFileListener;
 
 import javax.swing.tree.DefaultMutableTreeNode;
 import javax.swing.tree.DefaultTreeModel;
 import java.util.Comparator;
 
-public class ServerlessVirtualFileListener extends AbstractServerlessVirtualFileListener {
+public class ServiceVirtualFileListener extends AbstractServiceVirtualFileListener {
     private Tree tree;
     private ServiceTreeNodeFactory serviceTreeNodeFactory;
     private Comparator<Object> comparator;
 
-    public ServerlessVirtualFileListener(Tree tree, ServiceFactory serviceFactory, ServiceTreeNodeFactory serviceTreeNodeFactory, Comparator<Object> comparator, Project project) {
+    public ServiceVirtualFileListener(Tree tree, ServiceFactory serviceFactory, ServiceTreeNodeFactory serviceTreeNodeFactory, Comparator<Object> comparator, Project project) {
         super(project, serviceFactory);
 
         this.tree = tree;

@@ -18,7 +18,6 @@ import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.messages.Topic;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.FunctionInvocationResponseFileEditorManagerListener;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.TreeContextMenuFactory;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.*;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.Config;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettings;
@@ -59,13 +58,13 @@ public class ServerlessFrameworkGuiToolWindowFactory implements ToolWindowFactor
         FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(structureView, pluginSettings);
         messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, pluginSettings, structureView));
         messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, functionInvocationResponseFileEditorManagerListener);
-        VirtualFileManager.getInstance().addVirtualFileListener(new ServerlessVirtualFileListener(tree, serviceFactory, serviceTreeNodeFactory, Ordering.allEqual(), project));
+        VirtualFileManager.getInstance().addVirtualFileListener(new ServiceVirtualFileListener(tree, serviceFactory, serviceTreeNodeFactory, Ordering.allEqual(), project));
 
         return new JBScrollPane(tree);
     }
 
     private Tree createTree(Project project, ServiceTreeNodeFactory serviceTreeNodeFactory, CommandFactory commandFactory, ServiceRepository serviceRepository) {
-        ServiceTreeFactory serviceTreeFactory = new ServiceTreeFactory(project, serviceTreeNodeFactory, commandFactory, new TreeContextMenuFactory(project, commandFactory));
+        ServiceTreeFactory serviceTreeFactory = new ServiceTreeFactory(project, serviceTreeNodeFactory, commandFactory, new ServiceTreeContextMenuFactory(project, commandFactory));
         return serviceTreeFactory.create(serviceRepository.getAll());
     }
 

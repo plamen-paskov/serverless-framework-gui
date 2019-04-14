@@ -1,13 +1,13 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.service;
 
 import com.intellij.execution.ExecutionException;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.JBMenuItem;
 import com.intellij.openapi.ui.JBPopupMenu;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.Command;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.CommandFactory;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.service.Service;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
 
@@ -15,7 +15,7 @@ import javax.swing.*;
 import java.awt.event.ActionEvent;
 
 @RequiredArgsConstructor
-public class TreeContextMenuFactory {
+public class ServiceTreeContextMenuFactory {
     @NonNull
     private Project project;
     @NonNull

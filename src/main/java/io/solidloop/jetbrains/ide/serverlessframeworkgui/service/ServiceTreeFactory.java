@@ -9,7 +9,6 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.TreeContextMenuFactory;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.CommandFactory;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +32,7 @@ public class ServiceTreeFactory {
     @NonNull
     private CommandFactory commandFactory;
     @NonNull
-    private TreeContextMenuFactory contextMenuFactory;
+    private ServiceTreeContextMenuFactory contextMenuFactory;
 
     public Tree create(Set<Service> services) {
         Tree tree = new Tree(createRootNode(services));

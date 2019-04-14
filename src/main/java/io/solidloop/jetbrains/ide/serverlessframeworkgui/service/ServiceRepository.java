@@ -16,7 +16,7 @@ public class ServiceRepository {
         Set<Service> services = new HashSet<>();
 
         ProjectFileIndex.SERVICE.getInstance(project).iterateContent(fileOrDir -> {
-            if (ServerlessFileUtil.isServerlessFile(fileOrDir)) {
+            if (FileUtil.isServerlessFile(fileOrDir)) {
                 services.add(serviceFactory.create(fileOrDir));
             }
 
