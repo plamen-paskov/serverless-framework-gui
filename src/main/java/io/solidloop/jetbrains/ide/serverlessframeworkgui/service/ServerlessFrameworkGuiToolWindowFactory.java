@@ -45,7 +45,7 @@ public class ServerlessFrameworkGuiToolWindowFactory implements ToolWindowFactor
         copyExecScriptToTmpIfNeeded(config);
 
         Topic<FunctionCommandOutputHandler> functionCommandResponseTopic = Topic.create("Function command response", FunctionCommandOutputHandler.class);
-        DefaultCommandFactory commandFactory = new DefaultCommandFactory(project, new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()));
+        DefaultCommandFactory commandFactory = new DefaultCommandFactory(project, new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), functionCommandResponseTopic);
         ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()));
         ServiceRepository serviceRepository = new ServiceRepository(serviceFactory, project);
         ServiceTreeNodeFactory serviceTreeNodeFactory = new ServiceTreeNodeFactory();

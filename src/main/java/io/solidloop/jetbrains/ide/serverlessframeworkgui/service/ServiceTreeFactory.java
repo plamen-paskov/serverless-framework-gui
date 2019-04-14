@@ -62,7 +62,7 @@ public class ServiceTreeFactory {
 
                     if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2 && userObject instanceof Function) {
                         try {
-                            commandFactory.createDeployAndInvokeFunctionCommand((Function) userObject).execute();
+                            commandFactory.createInvokeFunctionCommand((Function) userObject).execute();
                         } catch (ExecutionException e) {
                             JBPopupFactory.getInstance()
                                     .createHtmlTextBalloonBuilder(e.getMessage(), MessageType.ERROR, null)

@@ -11,12 +11,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class DefaultCommandFactory implements CommandFactory {
     private static final String SERVERLESS_EXECUTABLE = "serverless";
-    private Topic<FunctionCommandOutputHandler> functionCommandOutputHandlerTopic;
 
     @NonNull
     private Project project;
     @NonNull
     private CommandLineFactory commandLineFactory;
+    @NonNull
+    private Topic<FunctionCommandOutputHandler> topic;
 
     private CommandArguments.CommandArgumentsBuilder getServerlessCommandArgumentsBuilder(String title, OutputListener outputListener) {
         return CommandArguments
@@ -30,15 +31,8 @@ public class DefaultCommandFactory implements CommandFactory {
         return getServerlessCommandArgumentsBuilder(title, null);
     }
 
-    private Topic<FunctionCommandOutputHandler> getFunctionCommandOutputHandlerTopic() {
-        if (functionCommandOutputHandlerTopic == null) {
-            functionCommandOutputHandlerTopic = Topic.create("Function command response", FunctionCommandOutputHandler.class);
-        }
-        return functionCommandOutputHandlerTopic;
-    }
-
     private FunctionCommandOutputListener createOutputListener(Function function) {
-        return new FunctionCommandOutputListener(project.getMessageBus(), getFunctionCommandOutputHandlerTopic(), function);
+        return new FunctionCommandOutputListener(project.getMessageBus(), topic, function);
     }
 
     @Override
