@@ -1,5 +1,6 @@
 package io.solidloop.jetbrains.ide.serverlessframeworkgui.command;
 
+import com.intellij.execution.OutputListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.util.messages.Topic;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
@@ -17,12 +18,16 @@ public class DefaultCommandFactory implements CommandFactory {
     @NonNull
     private CommandLineFactory commandLineFactory;
 
-    private ServerlessCommandArguments.ServerlessCommandArgumentsBuilder getServerlessCommandArgumentsBuilder() {
-        return ServerlessCommandArguments
+    private CommandArguments.CommandArgumentsBuilder getServerlessCommandArgumentsBuilder(String title, OutputListener outputListener) {
+        return CommandArguments
                 .builder()
-                .commandExecutor(new TerminalCommandExecutor(project))
+                .commandExecutor(new TerminalCommandExecutor(project, title, outputListener))
                 .commandLineFactory(commandLineFactory)
                 .serverlessExecutable(SERVERLESS_EXECUTABLE);
+    }
+
+    private CommandArguments.CommandArgumentsBuilder getServerlessCommandArgumentsBuilder(String title) {
+        return getServerlessCommandArgumentsBuilder(title, null);
     }
 
     private Topic<FunctionCommandOutputHandler> getFunctionCommandOutputHandlerTopic() {
@@ -38,12 +43,10 @@ public class DefaultCommandFactory implements CommandFactory {
 
     @Override
     public Command createInvokeFunctionCommand(Function function) {
-        ServerlessCommandArguments serverlessCommandArguments = getServerlessCommandArgumentsBuilder()
-                .terminalTitle("Invoke " + function.getName())
+        CommandArguments commandArguments = getServerlessCommandArgumentsBuilder("Invoke " + function.getName(), createOutputListener(function))
                 .workingDirectory(getWorkingDirectory(function))
-                .outputListener(createOutputListener(function))
                 .build();
-        return new InvokeFunctionCommand(serverlessCommandArguments, function);
+        return new InvokeFunctionCommand(commandArguments, function);
     }
 
     private String getWorkingDirectory(Service service) {
@@ -56,30 +59,27 @@ public class DefaultCommandFactory implements CommandFactory {
 
     @Override
     public Command createDeployAndInvokeFunctionCommand(Function function) {
-        ServerlessCommandArguments serverlessCommandArguments = getServerlessCommandArgumentsBuilder()
-                .terminalTitle("Deploy and Invoke " + function.getName())
+        CommandArguments commandArguments = getServerlessCommandArgumentsBuilder("Deploy and Invoke " + function.getName())
                 .workingDirectory(getWorkingDirectory(function))
                 .build();
-        return new DeployAndInvokeFunctionCommand(serverlessCommandArguments, (InvokeFunctionCommand) createInvokeFunctionCommand(function), function);
+        return new DeployAndInvokeFunctionCommand(commandArguments, (InvokeFunctionCommand) createInvokeFunctionCommand(function), function);
     }
 
     @Override
     public Command createDeployServiceCommand(Service service) {
-        ServerlessCommandArguments serverlessCommandArguments = getServerlessCommandArgumentsBuilder()
-                .terminalTitle("Deploy " + service.getName())
+        CommandArguments commandArguments = getServerlessCommandArgumentsBuilder("Deploy " + service.getName())
                 .workingDirectory(getWorkingDirectory(service))
                 .build();
 
-        return new DeployServiceCommand(serverlessCommandArguments);
+        return new DeployServiceCommand(commandArguments);
     }
 
     @Override
     public Command createRemoveServiceCommand(Service service) {
-        ServerlessCommandArguments serverlessCommandArguments = getServerlessCommandArgumentsBuilder()
-                .terminalTitle("Remove " + service.getName())
+        CommandArguments commandArguments = getServerlessCommandArgumentsBuilder("Remove " + service.getName())
                 .workingDirectory(getWorkingDirectory(service))
                 .build();
 
-        return new RemoveServiceCommand(serverlessCommandArguments);
+        return new RemoveServiceCommand(commandArguments);
     }
 }

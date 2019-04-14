@@ -6,11 +6,11 @@ import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
 public abstract class AbstractCommand implements Command {
-    protected ServerlessCommandArguments serverlessCommandArguments;
+    protected CommandArguments commandArguments;
 
     @Override
     public void execute() throws ExecutionException {
-        GeneralCommandLine generalCommandLine = serverlessCommandArguments.getCommandLineFactory().create(serverlessCommandArguments.getWorkingDirectory(), getCommand());
-        serverlessCommandArguments.getCommandExecutor().execute(serverlessCommandArguments.getTerminalTitle(), generalCommandLine, serverlessCommandArguments.getOutputListener());
+        GeneralCommandLine generalCommandLine = commandArguments.getCommandLineFactory().create(commandArguments.getWorkingDirectory(), getCommand());
+        commandArguments.getCommandExecutor().execute(generalCommandLine);
     }
 }

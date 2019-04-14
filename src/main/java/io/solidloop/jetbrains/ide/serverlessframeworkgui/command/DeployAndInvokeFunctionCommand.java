@@ -9,8 +9,8 @@ public class DeployAndInvokeFunctionCommand extends AbstractCommand {
     private InvokeFunctionCommand invokeFunctionCommand;
     private Function function;
 
-    public DeployAndInvokeFunctionCommand(ServerlessCommandArguments serverlessCommandArguments, InvokeFunctionCommand invokeFunctionCommand, Function function) {
-        super(serverlessCommandArguments);
+    public DeployAndInvokeFunctionCommand(CommandArguments commandArguments, InvokeFunctionCommand invokeFunctionCommand, Function function) {
+        super(commandArguments);
         this.invokeFunctionCommand = invokeFunctionCommand;
         this.function = function;
     }
@@ -18,7 +18,7 @@ public class DeployAndInvokeFunctionCommand extends AbstractCommand {
     @Override
     public List<String> getCommand() {
         List<String> command = new ArrayList<>();
-        command.add(serverlessCommandArguments.getServerlessExecutable());
+        command.add(commandArguments.getServerlessExecutable());
         command.add("deploy");
         command.add("function");
         command.add("-f");

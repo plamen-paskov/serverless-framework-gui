@@ -10,8 +10,8 @@ import java.util.List;
 public class InvokeFunctionCommand extends AbstractCommand {
     private Function function;
 
-    public InvokeFunctionCommand(ServerlessCommandArguments serverlessCommandArguments, Function function) {
-        super(serverlessCommandArguments);
+    public InvokeFunctionCommand(CommandArguments commandArguments, Function function) {
+        super(commandArguments);
         this.function = function;
     }
 
@@ -20,7 +20,7 @@ public class InvokeFunctionCommand extends AbstractCommand {
         Service service = function.getService();
 
         List<String> command = new ArrayList<>();
-        command.add(serverlessCommandArguments.getServerlessExecutable());
+        command.add(commandArguments.getServerlessExecutable());
         command.add("invoke");
         command.add("-f");
         command.add(function.getName());

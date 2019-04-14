@@ -17,11 +17,11 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.messages.Topic;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.FunctionInvocationResponseFileEditorManagerListener;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.TreeContextMenuFactory;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.*;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.Config;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettings;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.TreeContextMenuFactory;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.FunctionInvocationResponseFileEditorManagerListener;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.*;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 

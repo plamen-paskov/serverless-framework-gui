@@ -6,9 +6,9 @@ import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.testFramework.LightVirtualFile;
-import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettings;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.Function;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.FunctionInvocationResponseFileEditorManagerListener;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettings;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor

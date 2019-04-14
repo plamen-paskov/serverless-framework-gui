@@ -4,14 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class DeployServiceCommand extends AbstractCommand {
-    public DeployServiceCommand(ServerlessCommandArguments serverlessCommandArguments) {
-        super(serverlessCommandArguments);
+    public DeployServiceCommand(CommandArguments commandArguments) {
+        super(commandArguments);
     }
 
     @Override
     public List<String> getCommand() {
         List<String> command = new ArrayList<>();
-        command.add(serverlessCommandArguments.getServerlessExecutable());
+        command.add(commandArguments.getServerlessExecutable());
         command.add("deploy");
 
         return command;

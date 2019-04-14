@@ -20,22 +20,32 @@ import java.awt.*;
 public class TerminalCommandExecutor implements CommandExecutor {
     @NonNull
     private Project project;
+    @NonNull
+    private String title;
+    @NonNull
+    private ProcessListener processListener;
 
     @Override
-    public void execute(String terminalTitle, GeneralCommandLine commandLine, ProcessListener processListener) throws ExecutionException {
-        ProcessHandler processHandler = new OSProcessHandler(commandLine);
+    public void execute(GeneralCommandLine commandLine) throws ExecutionException {
+        ProcessHandler processHandler = createProcessHandler(commandLine);
         TerminalExecutionConsole consoleView = new TerminalExecutionConsole(project, processHandler);
 
         JPanel panel = new JPanel(new BorderLayout());
         panel.add(consoleView.getComponent());
 
+        processHandler.startNotify();
+
+        RunContentDescriptor contentDescriptor = new RunContentDescriptor(consoleView, processHandler, panel, title);
+        ExecutionManager.getInstance(project).getContentManager().showRunContent(DefaultRunExecutor.getRunExecutorInstance(), contentDescriptor);
+    }
+
+    private ProcessHandler createProcessHandler(GeneralCommandLine commandLine) throws ExecutionException {
+        ProcessHandler processHandler = new OSProcessHandler(commandLine);
+
         if (processListener != null) {
             processHandler.addProcessListener(processListener);
         }
 
-        processHandler.startNotify();
-
-        RunContentDescriptor contentDescriptor = new RunContentDescriptor(consoleView, processHandler, panel, terminalTitle);
-        ExecutionManager.getInstance(project).getContentManager().showRunContent(DefaultRunExecutor.getRunExecutorInstance(), contentDescriptor);
+        return processHandler;
     }
 }
