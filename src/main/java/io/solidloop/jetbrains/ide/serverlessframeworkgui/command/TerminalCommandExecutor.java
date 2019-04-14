@@ -10,20 +10,20 @@ import com.intellij.execution.process.ProcessListener;
 import com.intellij.execution.ui.RunContentDescriptor;
 import com.intellij.openapi.project.Project;
 import com.intellij.terminal.TerminalExecutionConsole;
-import lombok.NonNull;
-import lombok.RequiredArgsConstructor;
 
 import javax.swing.*;
 import java.awt.*;
 
-@RequiredArgsConstructor
 public class TerminalCommandExecutor implements CommandExecutor {
-    @NonNull
     private Project project;
-    @NonNull
     private String title;
-    @NonNull
     private ProcessListener processListener;
+
+    public TerminalCommandExecutor(Project project, String title, ProcessListener processListener) {
+        this.project = project;
+        this.title = title;
+        this.processListener = processListener;
+    }
 
     @Override
     public void execute(GeneralCommandLine commandLine) throws ExecutionException {
