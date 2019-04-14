@@ -19,27 +19,23 @@ public class DefaultCommandFactory implements CommandFactory {
     @NonNull
     private Topic<FunctionCommandOutputHandler> topic;
 
-    private CommandArguments.CommandArgumentsBuilder getServerlessCommandArgumentsBuilder(String title, OutputListener outputListener) {
-        return CommandArguments
-                .builder()
-                .commandExecutor(new TerminalCommandExecutor(project, title, outputListener))
-                .commandLineFactory(commandLineFactory)
-                .serverlessExecutable(SERVERLESS_EXECUTABLE);
-    }
-
-    private CommandArguments.CommandArgumentsBuilder getServerlessCommandArgumentsBuilder(String title) {
-        return getServerlessCommandArgumentsBuilder(title, null);
-    }
-
     private FunctionCommandOutputListener createOutputListener(Function function) {
         return new FunctionCommandOutputListener(project.getMessageBus(), topic, function);
     }
 
+    private CommandArguments createCommandArguments(String title, String workingDirectory, OutputListener outputListener) {
+        return CommandArguments
+                .builder()
+                .commandExecutor(new TerminalCommandExecutor(project, title, outputListener))
+                .commandLineFactory(commandLineFactory)
+                .serverlessExecutable(SERVERLESS_EXECUTABLE)
+                .workingDirectory(workingDirectory)
+                .build();
+    }
+
     @Override
     public Command createInvokeFunctionCommand(Function function) {
-        CommandArguments commandArguments = getServerlessCommandArgumentsBuilder("Invoke " + function.getName(), createOutputListener(function))
-                .workingDirectory(getWorkingDirectory(function))
-                .build();
+        CommandArguments commandArguments = createCommandArguments("Invoke " + function.getName(), getWorkingDirectory(function), createOutputListener(function));
         return new InvokeFunctionCommand(commandArguments, function);
     }
 
@@ -53,27 +49,19 @@ public class DefaultCommandFactory implements CommandFactory {
 
     @Override
     public Command createDeployAndInvokeFunctionCommand(Function function) {
-        CommandArguments commandArguments = getServerlessCommandArgumentsBuilder("Deploy and Invoke " + function.getName())
-                .workingDirectory(getWorkingDirectory(function))
-                .build();
+        CommandArguments commandArguments = createCommandArguments("Deploy and Invoke " + function.getName(), getWorkingDirectory(function), null);
         return new DeployAndInvokeFunctionCommand(commandArguments, (InvokeFunctionCommand) createInvokeFunctionCommand(function), function);
     }
 
     @Override
     public Command createDeployServiceCommand(Service service) {
-        CommandArguments commandArguments = getServerlessCommandArgumentsBuilder("Deploy " + service.getName())
-                .workingDirectory(getWorkingDirectory(service))
-                .build();
-
+        CommandArguments commandArguments = createCommandArguments("Deploy " + service.getName(), getWorkingDirectory(service), null);
         return new DeployServiceCommand(commandArguments);
     }
 
     @Override
     public Command createRemoveServiceCommand(Service service) {
-        CommandArguments commandArguments = getServerlessCommandArgumentsBuilder("Remove " + service.getName())
-                .workingDirectory(getWorkingDirectory(service))
-                .build();
-
+        CommandArguments commandArguments = createCommandArguments("Remove " + service.getName(), getWorkingDirectory(service), null);
         return new RemoveServiceCommand(commandArguments);
     }
 }
