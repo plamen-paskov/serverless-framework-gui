@@ -29,7 +29,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-public class ServicesToolWindowFactory implements ToolWindowFactory {
+public class ServerlessFrameworkGuiToolWindowFactory implements ToolWindowFactory {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
@@ -49,9 +49,9 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         DefaultCommandFactory commandFactory = new DefaultCommandFactory(project, new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()));
         ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()));
         ServiceRepository serviceRepository = new ServiceRepository(serviceFactory, project);
-        ServiceNodeFactory serviceNodeFactory = new ServiceNodeFactory();
+        ServiceTreeNodeFactory serviceTreeNodeFactory = new ServiceTreeNodeFactory();
 
-        Tree tree = createTree(project, serviceNodeFactory, commandFactory, serviceRepository);
+        Tree tree = createTree(project, serviceTreeNodeFactory, commandFactory, serviceRepository);
 
         PluginSettings pluginSettings = PluginSettings.getInstance();
         MessageBusConnection messageBusConnection = project.getMessageBus().connect();
@@ -59,13 +59,13 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(structureView, pluginSettings);
         messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, pluginSettings, structureView));
         messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, functionInvocationResponseFileEditorManagerListener);
-        VirtualFileManager.getInstance().addVirtualFileListener(new ServerlessVirtualFileListener(tree, serviceFactory, serviceNodeFactory, Ordering.allEqual(), project));
+        VirtualFileManager.getInstance().addVirtualFileListener(new ServerlessVirtualFileListener(tree, serviceFactory, serviceTreeNodeFactory, Ordering.allEqual(), project));
 
         return new JBScrollPane(tree);
     }
 
-    private Tree createTree(Project project, ServiceNodeFactory serviceNodeFactory, CommandFactory commandFactory, ServiceRepository serviceRepository) {
-        ServiceTreeFactory serviceTreeFactory = new ServiceTreeFactory(project, serviceNodeFactory, commandFactory, new TreeContextMenuFactory(project, commandFactory));
+    private Tree createTree(Project project, ServiceTreeNodeFactory serviceTreeNodeFactory, CommandFactory commandFactory, ServiceRepository serviceRepository) {
+        ServiceTreeFactory serviceTreeFactory = new ServiceTreeFactory(project, serviceTreeNodeFactory, commandFactory, new TreeContextMenuFactory(project, commandFactory));
         return serviceTreeFactory.create(serviceRepository.getAll());
     }
 

@@ -12,21 +12,21 @@ import java.util.Comparator;
 
 public class ServerlessVirtualFileListener extends AbstractServerlessVirtualFileListener {
     private Tree tree;
-    private ServiceNodeFactory serviceNodeFactory;
+    private ServiceTreeNodeFactory serviceTreeNodeFactory;
     private Comparator<Object> comparator;
 
-    public ServerlessVirtualFileListener(Tree tree, ServiceFactory serviceFactory, ServiceNodeFactory serviceNodeFactory, Comparator<Object> comparator, Project project) {
+    public ServerlessVirtualFileListener(Tree tree, ServiceFactory serviceFactory, ServiceTreeNodeFactory serviceTreeNodeFactory, Comparator<Object> comparator, Project project) {
         super(project, serviceFactory);
 
         this.tree = tree;
-        this.serviceNodeFactory = serviceNodeFactory;
+        this.serviceTreeNodeFactory = serviceTreeNodeFactory;
         this.comparator = comparator;
     }
 
     @Override
-    void onCreateOrUpdate(Service service) {
+    protected void onCreateOrUpdate(Service service) {
         // @// TODO: 12.04.19 handle create and update separately
-        DefaultMutableTreeNode newServiceNode = serviceNodeFactory.createOrUpdate(service);
+        DefaultMutableTreeNode newServiceNode = serviceTreeNodeFactory.createOrUpdate(service);
 
         if (findTreeNode(service) == null) {
             TreeUtil.insertNode(newServiceNode, getRootNode(), (DefaultTreeModel) tree.getModel(), true, comparator);
@@ -36,7 +36,7 @@ public class ServerlessVirtualFileListener extends AbstractServerlessVirtualFile
     }
 
     @Override
-    void onDelete(VirtualFile file) {
+    protected void onDelete(VirtualFile file) {
         DefaultMutableTreeNode serviceNode = findTreeNode(file);
 
         if (serviceNode != null) {
@@ -46,7 +46,7 @@ public class ServerlessVirtualFileListener extends AbstractServerlessVirtualFile
     }
 
     @Override
-    void onMoveInAnotherDirectory(VirtualFile file) {
+    protected void onMoveInAnotherDirectory(VirtualFile file) {
         tree.updateUI();
     }
 

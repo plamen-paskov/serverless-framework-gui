@@ -30,7 +30,7 @@
     ]]></change-notes>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Serverless Framework GUI" anchor="right" factoryClass="io.solidloop.jetbrains.ide.serverlessframeworkgui.service.ServicesToolWindowFactory"/>
+        <toolWindow id="Serverless Framework GUI" anchor="right" factoryClass="io.solidloop.jetbrains.ide.serverlessframeworkgui.service.ServerlessFrameworkGuiToolWindowFactory"/>
         <projectConfigurable displayName="Serverless Framework GUI" groupId="tools" instance="io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettingsForm"/>
         <projectService serviceImplementation="io.solidloop.jetbrains.ide.serverlessframeworkgui.config.Configuration" />
     </extensions>

@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class ServiceNodeFactory {
+public class ServiceTreeNodeFactory {
     private Map<Service, DefaultMutableTreeNode> cache = new HashMap<>();
 
     public DefaultMutableTreeNode createOrUpdate(Service service) {

@@ -29,7 +29,7 @@ public class ServiceTreeFactory {
     @NonNull
     private Project project;
     @NonNull
-    private ServiceNodeFactory serviceNodeFactory;
+    private ServiceTreeNodeFactory serviceTreeNodeFactory;
     @NonNull
     private CommandFactory commandFactory;
     @NonNull
@@ -46,7 +46,7 @@ public class ServiceTreeFactory {
 
     private DefaultMutableTreeNode createRootNode(Set<Service> services) {
         DefaultMutableTreeNode rootNode = new DefaultMutableTreeNode();
-        services.forEach(service -> rootNode.add(serviceNodeFactory.createOrUpdate(service)));
+        services.forEach(service -> rootNode.add(serviceTreeNodeFactory.createOrUpdate(service)));
         return rootNode;
     }
 

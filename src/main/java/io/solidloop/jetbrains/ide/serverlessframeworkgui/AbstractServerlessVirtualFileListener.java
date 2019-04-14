@@ -23,11 +23,11 @@ public abstract class AbstractServerlessVirtualFileListener implements VirtualFi
 
     private Queue<VirtualFile> beforeDeletionFiles;
 
-    abstract void onCreateOrUpdate(Service service);
+    abstract protected void onCreateOrUpdate(Service service);
 
-    abstract void onDelete(VirtualFile file);
+    abstract protected void onDelete(VirtualFile file);
 
-    abstract void onMoveInAnotherDirectory(VirtualFile file);
+    abstract protected void onMoveInAnotherDirectory(VirtualFile file);
 
 
     @Override
