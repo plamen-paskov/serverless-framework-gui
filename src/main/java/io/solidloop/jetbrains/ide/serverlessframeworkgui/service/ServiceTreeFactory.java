@@ -8,7 +8,9 @@ import com.intellij.openapi.ui.popup.JBPopupFactory;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.ui.tree.TreeUtil;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.Command;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.CommandFactory;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettings;
 import io.solidloop.jetbrains.ide.serverlessframeworkgui.function.Function;
 import lombok.NonNull;
 import lombok.RequiredArgsConstructor;
@@ -52,6 +54,14 @@ public class ServiceTreeFactory {
     // @// TODO: 12.04.19 inject mouse listener
     private MouseAdapter createMouseListener() {
         return new MouseAdapter() {
+            private Command createInvokeCommand(Function function) {
+                if (PluginSettings.getInstance().isDeployAndInvokeInsteadInvoke()) {
+                    return commandFactory.createDeployAndInvokeFunctionCommand(function);
+                }
+
+                return commandFactory.createInvokeFunctionCommand(function);
+            }
+
             @Override
             public void mouseClicked(final MouseEvent mouseEvent) {
                 Tree tree = (Tree) mouseEvent.getSource();
@@ -62,7 +72,7 @@ public class ServiceTreeFactory {
 
                     if (SwingUtilities.isLeftMouseButton(mouseEvent) && mouseEvent.getClickCount() == 2 && userObject instanceof Function) {
                         try {
-                            commandFactory.createInvokeFunctionCommand((Function) userObject).execute();
+                            createInvokeCommand((Function) userObject).execute();
                         } catch (ExecutionException e) {
                             JBPopupFactory.getInstance()
                                     .createHtmlTextBalloonBuilder(e.getMessage(), MessageType.ERROR, null)

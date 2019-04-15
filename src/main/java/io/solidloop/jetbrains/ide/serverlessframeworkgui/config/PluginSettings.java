@@ -13,6 +13,7 @@ public class PluginSettings implements PersistentStateComponent<PluginSettings> 
     private boolean openStructureView = true;
     private boolean closeStructureView = true;
     private boolean openFunctionInvocationResponseAsFile = true;
+    private boolean deployAndInvokeInsteadInvoke = false;
 
     public static PluginSettings getInstance() {
         return ServiceManager.getService(ProjectUtil.guessCurrentProject(null), PluginSettings.class);
@@ -28,5 +29,6 @@ public class PluginSettings implements PersistentStateComponent<PluginSettings> 
         setOpenStructureView(state.isOpenStructureView());
         setCloseStructureView(state.isCloseStructureView());
         setOpenFunctionInvocationResponseAsFile(state.isOpenFunctionInvocationResponseAsFile());
+        setDeployAndInvokeInsteadInvoke(state.isDeployAndInvokeInsteadInvoke());
     }
 }

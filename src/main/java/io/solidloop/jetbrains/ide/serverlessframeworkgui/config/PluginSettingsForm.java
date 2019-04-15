@@ -14,6 +14,7 @@ public class PluginSettingsForm implements Configurable {
     private JBCheckBox openStructureView;
     private JBCheckBox closeStructureView;
     private JBCheckBox openFunctionInvocationResponseAsFile;
+    private JBCheckBox deployAndInvokeInsteadInvoke;
 
     @Nls(capitalization = Nls.Capitalization.Title)
     @Override
@@ -28,10 +29,12 @@ public class PluginSettingsForm implements Configurable {
             openFunctionInvocationResponseAsFile = new JBCheckBox("Open function invocation response as a file");
             openStructureView = new JBCheckBox("Open Structure View when function invocation response file is opened");
             closeStructureView = new JBCheckBox("Close Structure View when all function invocation response files are closed");
+            deployAndInvokeInsteadInvoke = new JBCheckBox("Execute Deploy and Invoke instead of Invoke on function double click");
 
             openFunctionInvocationResponseAsFile.setSelected(pluginSettings.isOpenFunctionInvocationResponseAsFile());
             openStructureView.setSelected(pluginSettings.isOpenStructureView());
             closeStructureView.setSelected(pluginSettings.isCloseStructureView());
+            deployAndInvokeInsteadInvoke.setSelected(pluginSettings.isDeployAndInvokeInsteadInvoke());
 
             toggle();
             openFunctionInvocationResponseAsFile.addActionListener(changeEvent -> toggle());
@@ -39,6 +42,7 @@ public class PluginSettingsForm implements Configurable {
             formModificationHandler.add(openFunctionInvocationResponseAsFile);
             formModificationHandler.add(openStructureView);
             formModificationHandler.add(closeStructureView);
+            formModificationHandler.add(deployAndInvokeInsteadInvoke);
 
             panel = new JPanel();
             BoxLayout layout = new BoxLayout(panel, BoxLayout.Y_AXIS);
@@ -47,6 +51,7 @@ public class PluginSettingsForm implements Configurable {
             panel.add(openFunctionInvocationResponseAsFile);
             panel.add(openStructureView);
             panel.add(closeStructureView);
+            panel.add(deployAndInvokeInsteadInvoke);
         }
 
         return panel;
@@ -72,10 +77,12 @@ public class PluginSettingsForm implements Configurable {
         pluginSettings.setOpenFunctionInvocationResponseAsFile(openFunctionInvocationResponseAsFile.isSelected());
         pluginSettings.setOpenStructureView(openStructureView.isSelected());
         pluginSettings.setCloseStructureView(closeStructureView.isSelected());
+        pluginSettings.setDeployAndInvokeInsteadInvoke(deployAndInvokeInsteadInvoke.isSelected());
 
         formModificationHandler.add(openFunctionInvocationResponseAsFile);
         formModificationHandler.add(openStructureView);
         formModificationHandler.add(closeStructureView);
+        formModificationHandler.add(deployAndInvokeInsteadInvoke);
     }
 
     @Override
@@ -88,6 +95,7 @@ public class PluginSettingsForm implements Configurable {
         openFunctionInvocationResponseAsFile = null;
         openStructureView = null;
         closeStructureView = null;
+        deployAndInvokeInsteadInvoke = null;
         panel = null;
     }
 }
