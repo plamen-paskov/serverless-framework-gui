@@ -1,6 +1,7 @@
 package io.solidloop.jetbrains.ide.serverlessframeworkgui.service;
 
 import com.intellij.execution.ExecutionException;
+import com.intellij.icons.AllIcons;
 import com.intellij.openapi.fileEditor.FileEditorManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.JBMenuItem;
@@ -28,7 +29,8 @@ public class ServiceTreeContextMenuFactory {
     public JBPopupMenu createContextMenu(Service service) {
         JBPopupMenu popup = new JBPopupMenu();
 
-        JBMenuItem openFileMenuItem = new JBMenuItem("Open file");
+        JBMenuItem openFileMenuItem = new JBMenuItem("Open " + service.getFile().getName());
+        openFileMenuItem.setIcon(AllIcons.Welcome.OpenProject);
         openFileMenuItem.addActionListener(new AbstractAction() {
             @Override
             public void actionPerformed(ActionEvent actionEvent) {
@@ -36,6 +38,7 @@ public class ServiceTreeContextMenuFactory {
             }
         });
         popup.add(openFileMenuItem);
+        popup.addSeparator();
 
         JBMenuItem deployMenuItem = new JBMenuItem("Deploy");
         deployMenuItem.addActionListener(actionEvent -> execute(commandFactory.createDeployServiceCommand(service)));
