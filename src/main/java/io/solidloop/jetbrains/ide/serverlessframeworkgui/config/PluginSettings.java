@@ -1,4 +1,4 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.config;
 
 import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
@@ -8,25 +8,27 @@ import com.intellij.openapi.project.ProjectUtil;
 import lombok.Data;
 
 @Data
-@State(name = "Configuration", storages = @Storage("serverless-framework-gui/configuration.xml"))
-public class Configuration implements PersistentStateComponent<Configuration> {
+@State(name = "PluginSettings", storages = @Storage("serverless-framework-gui/plugin-settings.xml"))
+public class PluginSettings implements PersistentStateComponent<PluginSettings> {
     private boolean openStructureView = true;
     private boolean closeStructureView = true;
     private boolean openFunctionInvocationResponseAsFile = true;
+    private boolean deployAndInvokeInsteadInvoke = false;
 
-    public static Configuration getInstance() {
-        return ServiceManager.getService(ProjectUtil.guessCurrentProject(null), Configuration.class);
+    public static PluginSettings getInstance() {
+        return ServiceManager.getService(ProjectUtil.guessCurrentProject(null), PluginSettings.class);
     }
 
     @Override
-    public Configuration getState() {
+    public PluginSettings getState() {
         return this;
     }
 
     @Override
-    public void loadState(final Configuration state) {
+    public void loadState(final PluginSettings state) {
         setOpenStructureView(state.isOpenStructureView());
         setCloseStructureView(state.isCloseStructureView());
         setOpenFunctionInvocationResponseAsFile(state.isOpenFunctionInvocationResponseAsFile());
+        setDeployAndInvokeInsteadInvoke(state.isDeployAndInvokeInsteadInvoke());
     }
 }

@@ -1,11 +1,11 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.service;
 
 import com.intellij.openapi.vfs.VirtualFile;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class ServerlessFileUtil {
+public class FileUtil {
     private static final List<String> configFileNames = new ArrayList<>();
 
     static {
@@ -14,7 +14,7 @@ public class ServerlessFileUtil {
     }
 
     public static boolean isServerlessFile(VirtualFile file) {
-        return isServerlessFile(file.getName());
+        return !file.isDirectory() && isServerlessFile(file.getName());
     }
 
     public static boolean isServerlessFile(String fileName) {

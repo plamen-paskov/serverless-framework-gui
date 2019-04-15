@@ -1,29 +1,34 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.javaprop.JavaPropsMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
+import com.google.common.collect.Ordering;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.openapi.fileEditor.FileEditorManagerListener;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFileManager;
 import com.intellij.openapi.wm.ToolWindow;
 import com.intellij.openapi.wm.ToolWindowFactory;
+import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.treeStructure.Tree;
 import com.intellij.util.messages.MessageBusConnection;
 import com.intellij.util.messages.Topic;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.command.*;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.Config;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettings;
+import io.solidloop.jetbrains.ide.serverlessframeworkgui.function.FunctionInvocationResponseFileCloseListener;
 import org.apache.commons.io.FileUtils;
 import org.jetbrains.annotations.NotNull;
 
-import javax.swing.tree.DefaultMutableTreeNode;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
 
-public class ServicesToolWindowFactory implements ToolWindowFactory {
+public class ServerlessFrameworkGuiToolWindowFactory implements ToolWindowFactory {
     @Override
     public void createToolWindowContent(@NotNull Project project, @NotNull ToolWindow toolWindow) {
         ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
@@ -40,22 +45,27 @@ public class ServicesToolWindowFactory implements ToolWindowFactory {
         copyExecScriptToTmpIfNeeded(config);
 
         Topic<FunctionCommandOutputHandler> functionCommandResponseTopic = Topic.create("Function command response", FunctionCommandOutputHandler.class);
+        DefaultCommandFactory commandFactory = new DefaultCommandFactory(project, new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), functionCommandResponseTopic);
         ServiceFactory serviceFactory = new ServiceFactory(new ObjectMapper(new YAMLFactory()));
-        ServiceRepository serviceRepository = new ServiceRepository(project, serviceFactory);
-        ServiceNodeFactory serviceNodeFactory = new ServiceNodeFactory();
-        ServicesTreeComparator servicesTreeComparator = new ServicesTreeComparator();
-        ServicesTreeRootNodeFactory servicesTreeRootNodeFactory = new ServicesTreeRootNodeFactory(serviceNodeFactory, servicesTreeComparator);
-        DefaultMutableTreeNode rootNode = servicesTreeRootNodeFactory.create(serviceRepository.getAll());
-        Tree servicesTree = new ServicesTreeFactory(new TerminalCommandExecutor(project), new ExecScriptCommandLineFactory(config.getExecScriptFilesystemPath()), project, functionCommandResponseTopic).create(rootNode);
+        ServiceRepository serviceRepository = new ServiceRepository(serviceFactory, project);
+        ServiceTreeNodeFactory serviceTreeNodeFactory = new ServiceTreeNodeFactory();
 
-        Configuration configuration = Configuration.getInstance();
+        Tree tree = createTree(project, serviceTreeNodeFactory, commandFactory, serviceRepository);
+
+        PluginSettings pluginSettings = PluginSettings.getInstance();
         MessageBusConnection messageBusConnection = project.getMessageBus().connect();
-        FunctionInvocationResponseFileEditorManagerListener functionInvocationResponseFileEditorManagerListener = new FunctionInvocationResponseFileEditorManagerListener(ToolWindowUtil.getStructureView(project), configuration);
-        messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileEditorManagerListener, project, configuration));
-        messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, functionInvocationResponseFileEditorManagerListener);
-        VirtualFileManager.getInstance().addVirtualFileListener(new ServiceVirtualFileListener(servicesTree, serviceRepository, serviceFactory, serviceNodeFactory, servicesTreeComparator));
+        ToolWindow structureView = ToolWindowManager.getInstance(project).getToolWindow("Structure");
+        FunctionInvocationResponseFileCloseListener functionInvocationResponseFileCloseListener = new FunctionInvocationResponseFileCloseListener(structureView, pluginSettings);
+        messageBusConnection.subscribe(functionCommandResponseTopic, new FunctionCommandOutputHandlerStructureView(functionInvocationResponseFileCloseListener, project, pluginSettings, structureView));
+        messageBusConnection.subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, functionInvocationResponseFileCloseListener);
+        VirtualFileManager.getInstance().addVirtualFileListener(new ServiceVirtualFileListener(tree, serviceFactory, serviceTreeNodeFactory, Ordering.allEqual(), project));
 
-        return new JBScrollPane(servicesTree);
+        return new JBScrollPane(tree);
+    }
+
+    private Tree createTree(Project project, ServiceTreeNodeFactory serviceTreeNodeFactory, CommandFactory commandFactory, ServiceRepository serviceRepository) {
+        ServiceTreeFactory serviceTreeFactory = new ServiceTreeFactory(project, serviceTreeNodeFactory, commandFactory, new ServiceTreeContextMenuFactory(project, commandFactory));
+        return serviceTreeFactory.create(serviceRepository.getAll());
     }
 
     private void copyExecScriptToTmpIfNeeded(Config config) throws IOException {

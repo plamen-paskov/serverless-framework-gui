@@ -19,18 +19,27 @@
     ]]></description>
 
     <depends>com.intellij.modules.lang</depends>
-    <idea-version since-build="173" until-build="191.*"/>
+    <depends>org.jetbrains.plugins.yaml</depends>
+    <idea-version since-build="173.3415.22" until-build="191.*"/>
 
     <change-notes><![CDATA[
     <ul>
-        <li>The plugin is now available for 2017.3 - 2019.1 of the IDEs</li>
-        <li>Open built-in structure view window instead of custom popup</li>
+        <li>Fix: NullPointerException when region is not set in serverless.yml</li>
+        <li>Fix: Functions are not ordered as defined in serverless.yml</li>
+        <li>Fix: Remove custom tree sorting</li>
+        <li>Fix: Mute exceptions when serverless.yml is invalid</li>
+        <li>Enhancement: Add support for 2017.3 EAP</li>
+        <li>Enhancement: Copy service/function name by selecting a tree node</li>
+        <li>Enhancement: Display serverless.yml file path next to service name in the tree</li>
+        <li>Enhancement: Add Open serverless.yml file to service context menu</li>
+        <li>Enhancement: Improve context menu styling</li>
+        <li>Enhancement: Make function double click behavior configurable</li>
     </ul>
     ]]></change-notes>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Serverless Framework GUI" anchor="right" factoryClass="io.solidloop.jetbrains.ide.serverlessframeworkgui.ServicesToolWindowFactory"/>
-        <projectConfigurable displayName="Serverless Framework GUI" groupId="tools" instance="io.solidloop.jetbrains.ide.serverlessframeworkgui.ConfigurationForm"/>
-        <projectService serviceImplementation="io.solidloop.jetbrains.ide.serverlessframeworkgui.Configuration" />
+        <toolWindow id="Serverless Framework GUI" anchor="right" factoryClass="io.solidloop.jetbrains.ide.serverlessframeworkgui.service.ServerlessFrameworkGuiToolWindowFactory"/>
+        <projectConfigurable displayName="Serverless Framework GUI" groupId="tools" instance="io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettingsForm"/>
+        <projectService serviceImplementation="io.solidloop.jetbrains.ide.serverlessframeworkgui.config.PluginSettings" />
     </extensions>
 </idea-plugin>

@@ -1,4 +1,4 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.config;
 
 import lombok.Data;
 

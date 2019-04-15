@@ -1,4 +1,4 @@
-package io.solidloop.jetbrains.ide.serverlessframeworkgui;
+package io.solidloop.jetbrains.ide.serverlessframeworkgui.config;
 
 import javax.swing.*;
 import java.util.HashMap;
@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public class FormChangeListener {
+public class FormModificationHandler {
     private Set<JComponent> components = new HashSet<>();
     private Map<JComponent, Object> defaultValues = new HashMap<>();
 
