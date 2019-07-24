@@ -15,7 +15,11 @@
     To use this plugin you must have bash shell and <a href="https://serverless.com/">Serverless Framework</a> installed.
 
     <h6>Notes</h6>
-    <b>serverless</b> executable must be in your search path
+    <ul>
+        <li><b>serverless</b> executable must be in your search path</li>
+        <li>At this stage passing stage and region to the deploy command is not possible. A workaround is to add/modify region and stage directly in the serverless.yml file. Reference: https://serverless.com/framework/docs/providers/aws/guide/serverless.yml/ (check <b>provider</b>)</li>
+    </ul>
+
     ]]></description>
 
     <depends>com.intellij.modules.lang</depends>
@@ -24,16 +28,7 @@
 
     <change-notes><![CDATA[
     <ul>
-        <li>Fix: NullPointerException when region is not set in serverless.yml</li>
-        <li>Fix: Functions are not ordered as defined in serverless.yml</li>
-        <li>Fix: Remove custom tree sorting</li>
-        <li>Fix: Mute exceptions when serverless.yml is invalid</li>
-        <li>Enhancement: Add support for 2017.3 EAP</li>
-        <li>Enhancement: Copy service/function name by selecting a tree node</li>
-        <li>Enhancement: Display serverless.yml file path next to service name in the tree</li>
-        <li>Enhancement: Add Open serverless.yml file to service context menu</li>
-        <li>Enhancement: Improve context menu styling</li>
-        <li>Enhancement: Make function double click behavior configurable</li>
+        <li>Add a note about how to add/modify stage and region</li>
     </ul>
     ]]></change-notes>
 
